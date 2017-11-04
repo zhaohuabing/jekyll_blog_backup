@@ -59,7 +59,7 @@ disqus_username: zhaohuabings-blog
 
 # Analytics settings
 # Baidu Analytics
-# ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
+ba_track_id: a1d96090e4189c0376251fb043da7be5
 # Google Analytics
 ga_track_id: 'UA-109223766-1'            # Format: UA-xxxxxx-xx
 ga_domain: zhaohuabing.com
