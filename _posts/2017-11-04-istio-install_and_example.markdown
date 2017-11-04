@@ -1,3 +1,19 @@
+---
+layout:     post
+title:      "Istio及Bookinfo示例程序安装试用笔记"
+subtitle:   "手把手教你从零搭建Istio及Bookinfo示例程序"
+date:       2017-11-04 14:00:00
+author:     "赵化冰"
+header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
+tags:
+    - Microservice
+    - Istio
+    - Service Mesh
+    - 服务网格
+    - Kubernetes
+    - Rancher
+---
+
 # 服务网格简介
 
 **服务网格**（Service Mesh）是为解决微服务的通信和治理而出现的一种**架构模式**。
