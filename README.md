@@ -1,9 +1,3 @@
-# HuxBlog Boilerplate
-
-##### This is the boilerplate of [Hux Blog](https://github.com/Huxpro/huxpro.github.io), all documents is over there!
-
-#### [View Boilerplate &rarr;](http://huangxuan.me/huxblog-boilerplate/)
-
-#### [View Live Hux Blog &rarr;](http://huangxuan.me)
-
-## If you like Hux Blog, Please star [huxpro.github.io repo](https://github.com/Huxpro/huxpro.github.io) instead of this! Thank you!
+# 赵化冰的网络日志
+##世界这么大，我想去看看：记录我的所思所想
+##### 感谢[huxpro.github.io repo](https://github.com/Huxpro/huxpro.github.io) 提供的模板。
