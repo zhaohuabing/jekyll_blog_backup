@@ -10,8 +10,10 @@ tags:
     - Microservice
     - Istio
     - Service Mesh
-    - 服务网格
     - Cloud Native
+    - 服务网格
+    - 微服务
+    
 ---
 
 关于Istio的更多内容请参考[istio中文文档](http://istio.doczh.cn/)。
