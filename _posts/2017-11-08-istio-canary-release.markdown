@@ -4,7 +4,7 @@ title:      "Istio灰度发布实践"
 subtitle:   "采用Istio实现对用户无感知的平滑业务升级"
 date:       2017-11-07 15:00:00
 author:     "赵化冰"
-header-img: "img/in-post/istio-canary-release/canary_bg"
+header-img: "img/in-post/istio-canary-release/canary_bg.jpg"
 tags:
     - Microservice
     - Istio
