@@ -1,0 +1,101 @@
+---
+layout:     post
+title:      "采用Istio实现应用灰度发布"
+subtitle:   "本文翻译自istio官方文档"
+date:       2017-11-07 15:00:00
+author:     "赵化冰"
+header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
+tags:
+    - Microservice
+    - Istio
+    - Service Mesh
+    - 服务网格
+    - Cloud Native
+---
+当应用上线以后，运维面临的一大挑战是如何能够在不影响上线业务的情况下对服务进行平滑升级。一般通过[灰度发布（又名金丝雀发布）](https://martinfowler.com/bliki/CanaryRelease.html)的发布流程来实现业务的平滑过渡。如果要自己实现一套灰度发布的流程，工作量和难度的挑战是非常大的。然后通过Istio的带权重路由规则，可以轻松地将应用流量逐渐从老版本的服务组件迁移到新版本的服务中，以实现应用新版本的灰度发布。
+
+
+采用kubernetes的[应用版本升级](https://kubernetes.io/docs/tutorials/kubernetes-basics/update-intro/)功能也可以实现不中断业务的应用升级。但采用Istio后，可以通过定制路由规则将特定的流量（如指定特征的用户）导入新版本服务中，在生产环境下进行测试，同时屏蔽对VIP用户的影响，待测试充分后再逐渐把流量导入到新版本服务中。并且在有多个版本服务时，还可对不同版本的服务进行独立的Scaling。
+
+![Istio灰度发布示意图](\img\in-post\istio-traffic-shifting\canary-deployments.gif)
+
+Istio和BookInfo应用程序安装可以参考[手把手教你从零搭建Istio及Bookinfo示例程序](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)
+
+关于istio的更多内容请参考[istio中文文档](http://istio.doczh.cn/)。
+
+翻译内容：
+
+本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
+
+为简单起见，本任务将采用两步将流量从`reviews:v1` 迁移到 `reviews:v3`，权重分别为50%，100%。
+
+## 开始之前
+
+* 参照文档[安装指南](http://istio.doczh.cn/docs/setup/kubernetes/index.html)中的步骤安装Istio。
+
+* 部署[BookInfo](http://istio.doczh.cn/docs/guides/bookinfo.html) 示例应用程序。
+
+>  请注意：本文档假设示采用kubernetes部署示例应用程序。所有的示例命令行都采用规则yaml文件（例如`samples/bookinfo/kube/route-rule-all-v1.yaml`）指定的kubernetes版本。如果在不同的环境下运行本任务，请将`kube`修改为运行环境中相应的目录（例如，对基于Consul的运行环境，目录就是`samples/bookinfo/consul/route-rule-all-v1.yaml`）。
+
+
+## 基于权重的版本路由
+
+1. 将所有微服务的缺省版本设置为v1.
+
+   ```bash
+   istioctl create -f samples/bookinfo/kube/route-rule-all-v1.yaml
+   ```
+
+1. 在浏览器中打开http://$GATEWAY_URL/productpage,  确认`reviews` 服务目前的活动版本是v1。
+
+   可以看到浏览器中出现BooInfo应用的productpage页面。
+   注意`productpage`显示的评价内容不带星级。这是由于`reviews:v1`不会访问`ratings`服务。
+
+   > 请注意：如果之前执行过 [配置请求路由](./request-routing.md)任务，则需要先注销测试用户“jason”或者删除之前单独为该用户创建的测试规则：
+
+     ```bash
+     istioctl delete routerule reviews-test-v2
+     ```
+
+1. 首先，使用下面的命令把50%的流量从`reviews:v1`转移到`reviews:v3`:
+
+   ```bash
+   istioctl replace -f samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
+   ```
+
+   注意这里使用了`istioctl replace`而不是`create`。
+
+1. 在浏览器中多次刷新`productpage`页面，大约有50%的几率会看到页面中出现带红星的评价内容。
+
+   > 请注意：在目前的Envoy sidecar实现中，可能需要刷新`productpage`很多次才能看到流量分发的效果。在看到页面出现变化前，有可能需要刷新15次或者更多。如果修改规则，将90%的流量路由到v3，可以看到更明显的效果。
+
+1. 当v3版本的`reviews`服务已经稳定运行后，可以将100%的流量路由到`reviews:v3`：
+
+   ```bash
+   istioctl replace -f samples/bookinfo/kube/route-rule-reviews-v3.yaml
+   ```
+
+   此时，以任何用户登录到`productpage`页面，都可以看到带红星的评价信息。
+
+## 理解原理
+
+在这个任务中，我们使用了Istio的带权重路由的特性将流量从老版本的`reviews`服务逐渐迁移到了新版本服务中。
+
+注意该方式和使用容器编排平台的部署特性来进行版本迁移是完全不同的。容器编排平台使用了实例scaling来对流量进行管理。而通过Istio，两个版本的`reviews`服务可以独立地进行scale up和scale down，并不会影响这两个版本服务之间的流量分发。
+
+想了解更多支持scaling的按版本路由功能，请查看[Canary Deployments using Istio](https://istio.io/blog/canary-deployments-using-istio.html)。
+
+## 清理
+
+* 删除路由规则。
+
+  ```bash
+  istioctl delete -f samples/bookinfo/kube/route-rule-all-v1.yaml
+  ```
+
+* 如果不打算尝试后面的任务，请参照[BookInfo cleanup](http://istio.doczh.cn/docs/guides/bookinfo.html#cleanup) 中的步骤关闭应用程序。
+
+
+## 进阶阅读
+
+* 更多的内容请参见[请求路由](http://istio.doczh.cn/docs/concepts/traffic-management/rules-configuration.html)。
