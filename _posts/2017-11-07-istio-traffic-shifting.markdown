@@ -4,7 +4,7 @@ title:      "使用Istio实现应用流量转移"
 subtitle:   "本文翻译自istio官方文档"
 date:       2017-11-07 15:00:00
 author:     "赵化冰"
-header-img: "img/in-post/istio-traffic-shifting/crossroads.jpg"
+header-img: "img/in-post/istio-traffic-shifting/crossroads.png"
 tags:
     - Microservice
     - Istio
