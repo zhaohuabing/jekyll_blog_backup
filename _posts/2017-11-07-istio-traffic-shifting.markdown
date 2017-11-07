@@ -4,6 +4,7 @@ title:      "使用Istio实现应用流量转移"
 subtitle:   "本文翻译自istio官方文档"
 date:       2017-11-07 15:00:00
 author:     "赵化冰"
+description: "使用Istio实现应用流量转移"
 header-img: "img/in-post/istio-traffic-shifting/crossroads.png"
 tags:
     - Microservice
@@ -13,7 +14,7 @@ tags:
     - Cloud Native
 ---
 
-关于istio的更多内容请参考[istio中文文档](http://istio.doczh.cn/)。
+关于Istio的更多内容请参考[istio中文文档](http://istio.doczh.cn/)。
 
 原文参见[Traffic Shifting](https://istio.io/docs/tasks/traffic-management/traffic-shifting.html)。
 
