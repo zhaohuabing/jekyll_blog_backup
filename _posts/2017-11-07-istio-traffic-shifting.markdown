@@ -15,7 +15,7 @@ tags:
 
 关于istio的更多内容请参考[istio中文文档](http://istio.doczh.cn/)。
 
-翻译内容：
+原文参见[Traffic Shifting](https://istio.io/docs/tasks/traffic-management/traffic-shifting.html)。
 
 本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
 
@@ -43,7 +43,7 @@ tags:
    可以看到浏览器中出现BooInfo应用的productpage页面。
    注意`productpage`显示的评价内容不带星级。这是由于`reviews:v1`不会访问`ratings`服务。
 
-   > 请注意：如果之前执行过 [配置请求路由](./request-routing.md)任务，则需要先注销测试用户“jason”或者删除之前单独为该用户创建的测试规则：
+   > 请注意：如果之前执行过 [配置请求路由](http://istio.doczh.cn/docs/tasks/traffic-management/request-routing.html)任务，则需要先注销测试用户“jason”或者删除之前单独为该用户创建的测试规则：
 
      ```bash
      istioctl delete routerule reviews-test-v2
