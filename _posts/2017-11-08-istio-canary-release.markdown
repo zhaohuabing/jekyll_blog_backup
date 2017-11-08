@@ -17,6 +17,7 @@ tags:
 # 灰度发布（又名金丝雀发布）介绍
 
 当应用上线以后，运维面临的一大挑战是如何能够在不影响已有线上业务的情况下对服务进行升级。做过产品的同学都清楚，不管在发布前做过多么完备的自动化和人工测试，在发布后都会出现或多或少的故障。根据墨菲定律，可能会出错的版本发布一定会出错!
+
 "ANYTHING THAN CAN GO WRONG WILL GO WRONG"  --MURPHY'S LAW
 
 在无法百分百避免版本升级故障的情况下，需要通过一种方式进行可控的版本发布，把故障影响控制在可以接受的范围内，并可以快速回退。
@@ -38,10 +39,18 @@ tags:
 
 备注：采用kubernetes的[滚动升级(rolling update)](https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/)功能也可以实现不中断业务的应用升级,但滚动升级是通过逐渐使用新版本的服务来替换老版本服务的方式对应用进行升级，在滚动升级不能对应用的流量分发进行控制，因此无法采用受控地把生产流量逐渐导流到新版本服务中，也就无法控制服务升级对用户造成的影响。
 
-采用Istio后，可以通过定制路由规则将特定的流量（如指定特征的用户）导入新版本服务中，在生产环境下进行测试，同时通过渐进受控地导入生产流量，可以最小化升级中出现的故障对用户的影响。并且在同时存在新老版本服务时，还可根据应用压力对不同版本的服务进行独立的缩扩容，非常灵活。
-
+采用Istio后，可以通过定制路由规则将特定的流量（如指定特征的用户）导入新版本服务中，在生产环境下进行测试，同时通过渐进受控地导入生产流量，可以最小化升级中出现的故障对用户的影响。并且在同时存在新老版本服务时，还可根据应用压力对不同版本的服务进行独立的缩扩容，非常灵活。采用Istio进行灰度发布的流程如下图所示：
 ![Istio灰度发布示意图](\img\in-post\istio-canary-release\canary-deployments.gif)
 
-Istio和BookInfo应用程序安装可以参考[手把手教你从零搭建Istio及Bookinfo示例程序](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)
+# 操作步骤
+下面采用Istion自带的BookinfoInfo示例程序来实验灰度发布的流程。
+## 测试环境安装
+首先参考[手把手教你从零搭建Istio及Bookinfo示例程序](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)安装Kubernetes及Istio控制面。
 
-# 未完待续
+先不安装Bookinfo应用，如果已经安装了该应用，则采用下面的命令卸载。
+
+```
+istio-0.2.10/samples/bookinfo/kube/cleanup.sh
+```
+
+## 未完待续
