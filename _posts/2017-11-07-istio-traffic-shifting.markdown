@@ -1,8 +1,9 @@
 ---
 layout:     post
 title:      "使用Istio实现应用流量转移"
-subtitle:   "本文翻译自istio官方文档"
-date:       2017-11-07 15:00:00
+subtitle:   "本文翻译自istio官方文档"
+description: "本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。"
+date:       2017-11-07 15:00:00
 author:     "赵化冰"
 description: "使用Istio实现应用流量转移"
 header-img: "img/in-post/istio-traffic-shifting/crossroads.png"
