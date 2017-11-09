@@ -2,7 +2,8 @@
 layout:     post
 title:      "Istio及Bookinfo示例程序安装试用笔记"
 subtitle:   "手把手教你从零搭建Istio及Bookinfo示例程序"
-date:       2017-11-04 14:00:00
+description: "服务网格将服务间通讯以及与此相关的管理控制功能从业务程序中下移到一个基础设施层，从而彻底隔离了业务逻辑和服务通讯两个关注点。采用服务网格后，应用开发者只需要关注并实现应用业务逻辑。服务之间的通信，包括服务发现，通讯的可靠性，通讯的安全性，服务路由等由服务网格层进行处理，并对应用程序透明。"
+date:       2017-11-04 14:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
 tags:
