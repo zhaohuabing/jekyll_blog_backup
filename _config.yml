@@ -88,11 +88,5 @@ friends: [
     },{
         title: "Awesome Service Mesh",
         href: "https://servicemesh.gitbooks.io/awesome-servicemesh/"
-    },{
-        title: "Example Friends",
-        href: "#"
-    },{
-        title: "It helps SEO",
-        href: "#"
     }
 ]
