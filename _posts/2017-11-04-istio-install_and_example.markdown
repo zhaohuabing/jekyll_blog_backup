@@ -343,7 +343,7 @@ spec:
 启用该路由规则
 
 ```
-istioctl create -f route_rule.yaml -n default
+istioctl create -f route-rule.yaml -n default
 ```
 
 再次打开productpage页面, 无论刷新多少次，显示的页面将始终是v1版本的输出，即不带星的评价内容。  

@@ -83,11 +83,11 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 # Friends
 friends: [
     {
-        title: "Foo",
-        href: "#"
+        title: "ServiceMesh中文网",
+        href: "http://www.servicemesh.cn"
     },{
-        title: "Bar",
-        href: "#"
+        title: "Awesome Service Mesh",
+        href: "https://servicemesh.gitbooks.io/awesome-servicemesh/"
     },{
         title: "Example Friends",
         href: "#"
