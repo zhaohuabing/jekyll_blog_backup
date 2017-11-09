@@ -2,9 +2,11 @@
 layout:     post
 title:      "采用Istio实现灰度发布(金丝雀发布)"
 subtitle:   "用户无感知的平滑业务升级"
+description: "当应用上线以后，运维面临的一大挑战是如何能够在不影响已有线上业务的情况下对服务进行升级。本文将介绍如何使用Istio实现应用灰度发布（金丝雀发布）"
 date:       2017-11-07 15:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-canary-release/canary_bg.jpg"
+published: false
 tags:
     - Microservice
     - Istio
@@ -12,6 +14,8 @@ tags:
     - Cloud Native
     - 服务网格
     - 微服务
+    - 云原生
+    - 灰度发布
 ---
 
 # 灰度发布（又名金丝雀发布）介绍
