@@ -49,16 +49,16 @@ Istio通过高度的抽象和良好的设计采用一致的方式解决了该问
 ![Istio灰度发布示意图](\img\in-post\istio-canary-release\canary-deployments.gif)
 
 # 操作步骤
-下面采用Istion自带的BookinfoInfo示例程序来实验灰度发布的流程。
+下面采用Istion自带的BookinfoInfo示例程序来尝试灰度发布的流程。
 ## 测试环境安装
 首先参考[手把手教你从零搭建Istio及Bookinfo示例程序](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)安装Kubernetes及Istio控制面。
 
-先不安装Bookinfo应用，如果已经安装了该应用，则采用下面的命令卸载。
+因为本试验并不需要安装全部3个版本的reviews服务，因此如果已经安装了该应用，先采用下面的命令卸载。
 
 ```
 istio-0.2.10/samples/bookinfo/kube/cleanup.sh
 ```
-##部署V1版本的服务
+## 部署V1版本的服务
 
 首先只部署V1版本的Bookinfo应用程序。由于示例中的yaml文件中包含了3个版本的reviews服务，我们先将V2和V3版本的Deployment从yaml文件istio-0.2.10/samples/bookinfo/kube/bookinfo.yaml中删除。
 
@@ -127,9 +127,9 @@ reviews-v1-1360980140-0zs9z       2/2       Running   0          2m
 ![](/img/in-post/istio-canary-release/product-page-default.PNG)
 
 此时系统中微服务的部署情况如下图所示（下面的示意图均忽略和本例关系不大的details和ratings服务）：
-![](/img/in-post/istio-canary-release/canary-example-deploy-v1.PNG)
+![](/img/in-post/istio-canary-release/canary-example-only-v1.PNG)
 
-##部署V2版本的reviews服务
+## 部署V2版本的reviews服务
 在部署V2版本的reviews服务前，需要先创建一条缺省路由规则route-rule-default-reviews.yaml，将所有生产流量都导向V1版本，避免对线上用户的影响。
 
 ```
@@ -180,11 +180,11 @@ kubectl apply -f <(istioctl kube-inject -f  bookinfo-reviews-v2.yaml)
 ![](/img/in-post/istio-canary-release/canary-example-deploy-v2.PNG)
 
 
-##将测试流量导入到V2版本的reviews服务
+## 将测试流量导入到V2版本的reviews服务
 在进行模拟测试时，由于测试环境和生产环境的网络，服务器，操作系统等环境存在差异，很难完全模拟生产环境进行测试。为了减少环境因素的对测试结果的影响，我们希望能在生产环境中进行上线前的测试，但如果没有很好的隔离措施，可能会导致测试影响已上线的业务，对企业造成损失。
 
 通过采用Istio的路由规则，可以在类生产环境中进行测试，又完全隔离了线上用户的生产流量和测试流量，最小化模拟测试对已上线业务的影响。如下图所示：
-![](/img/in-post/istio-canary-release/canary-example-deploy-v2.PNG)
+![](/img/in-post/istio-canary-release/canary-example-route-test.PNG)
 
 创建一条规则，将用户名为 test-user 的流量导入到V2
 
@@ -214,12 +214,12 @@ spec:
 istioctl create -f route-rule-test-reviews-v2.yaml -n default
 ```
 以test-user用户登录，可以看到V2版本带星级的评价页面。
-![](/img/in-post/istio-canary-release/canary-example-route-test.PNG)
+![](/img/in-post/istio-canary-release/product-page-test-user.PNG)
 
 注销test-user，只能看到V1版本不带星级的评价页面。如下图所示：
 ![](/img/in-post/istio-canary-release/product-page-default.PNG)
 
-##将部分生产流量导入到V2版本的reviews服务
+## 将部分生产流量导入到V2版本的reviews服务
 
 在线上模拟测试完成后，如果系统测试情况良好，可以通过规则将一部分用户流量导入到V2版本的服务中，进行小规模的“金丝雀”测试。
 
