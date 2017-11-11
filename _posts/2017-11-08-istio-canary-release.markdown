@@ -62,8 +62,9 @@ istio-0.2.10/samples/bookinfo/kube/cleanup.sh
 
 首先只部署V1版本的Bookinfo应用程序。由于示例中的yaml文件中包含了3个版本的reviews服务，我们先将V2和V3版本的Deployment从yaml文件istio-0.2.10/samples/bookinfo/kube/bookinfo.yaml中删除。
 
+从Bookinfo.yaml中删除这部分内容:
+
 ```
-#从Bookinfo.yaml中删除这部分内容
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
