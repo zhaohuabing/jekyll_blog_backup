@@ -29,7 +29,7 @@ layout: default
                     {% comment %} if page.subtitle {% endcomment %}
                     <h2 class="subheading">{{ page.subtitle }}</h2>
                     {% comment %} endif {% endcomment %}
-                    <span  class="meta">Posted by {% if page.author %}{{ page.author }}{% else %}{{ site.title }}{% endif %} on {{ page.date | date: "%B %-d, %Y" }}</span>
+                    <span  class="meta">Posted by {% if page.author %}{{ page.author }}{% else %}{{ site.title }}{% endif %} on {{ page.date | date: "%B %-d, %Y" }}
                     <span id="{{page.url}}" class="leancloud_visitors meta_data_item" data-flag-title="">
                         <span class="post-meta-item-icon">
                           <span class="octicon octicon-eye"></span> 
@@ -37,6 +37,7 @@ layout: default
                         <span class="old-visitors-count" style="display: none;"></span>
                         <span class="leancloud-visitors-count"></span>
                    </span>
+                </span>
                 </div>
             </div>
         </div>
