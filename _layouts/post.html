@@ -119,6 +119,8 @@ layout: default
                 </div>
                 <!-- disqus 评论框 end -->
                 {% endif %}
+				
+				<div id="comment"></div>
 
             </div>
 
@@ -221,6 +223,17 @@ layout: default
         };
         anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
     })
+</script>
+<script src="/js/iDisqus.min.js"></script>
+<script>
+var disq = new iDisqus('comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'http://disqus.zhaohuabing.com',
+    site: 'http://zhaohuabing.com',
+    mode: 1,
+    timeout: 3000,
+    init: true
+});
 </script>
 <style>
     /* place left on bigger screen */
