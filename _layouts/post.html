@@ -112,15 +112,20 @@ layout: default
                 <!-- 多说评论框 end -->
                 {% endif %}
 
+				<!-- disqus 评论框 start -->
+				<!--
                 {% if site.disqus_username %}
-                <!-- disqus 评论框 start -->
+                
                 <div class="comment">
                     <div id="disqus_thread" class="disqus-thread"></div>
                 </div>
-                <!-- disqus 评论框 end -->
-                {% endif %}
 				
-				<div id="comment"></div>
+
+                {% endif %}
+				-->
+				<!-- disqus 评论框 end -->
+				
+				<div id="disqus-comment"></div>
 
             </div>
 
@@ -226,7 +231,7 @@ layout: default
 </script>
 <script src="/js/iDisqus.min.js"></script>
 <script>
-var disq = new iDisqus('comment', {
+var disq = new iDisqus('disqus-comment', {
     forum: 'zhaohuabings-blog',
     api: 'http://disqus.zhaohuabing.com',
     site: 'http://zhaohuabing.com',
