@@ -189,20 +189,17 @@ layout: default
 
 
 {% if site.disqus_username %}
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "{{site.disqus_username}}";
-    var disqus_identifier = "{{page.id}}";
-    var disqus_url = "{{site.url}}{{page.url}}";
-
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
+<script src="/js/iDisqus.min.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: '{{site.disqus_username}}',
+    api: 'http://disqus.zhaohuabing.com',
+    site: 'http://zhaohuabing.com',
+    mode: 1,
+    timeout: 3000,
+    init: true
+});
 </script>
-<!-- disqus 公共JS代码 end -->
 {% endif %}
 
 
@@ -229,17 +226,7 @@ layout: default
         anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
     })
 </script>
-<script src="/js/iDisqus.min.js"></script>
-<script>
-var disq = new iDisqus('disqus-comment', {
-    forum: 'zhaohuabings-blog',
-    api: 'http://disqus.zhaohuabing.com',
-    site: 'http://zhaohuabing.com',
-    mode: 1,
-    timeout: 3000,
-    init: true
-});
-</script>
+
 <style>
     /* place left on bigger screen */
     @media all and (min-width: 800px) {
