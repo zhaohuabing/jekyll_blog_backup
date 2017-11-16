@@ -18,10 +18,13 @@ tags:
     - 云原生
 ---
 
+## 目录
+{:.no_toc}
+
 * 目录
 {:toc}
 
-# 服务网格简介
+## 服务网格简介
 
 **服务网格**（Service Mesh）是为解决微服务的通信和治理而出现的一种**架构模式**。
 
@@ -49,7 +52,7 @@ _William Morgan _[_WHAT’S A SERVICE MESH? AND WHY DO I NEED ONE?_](https://buo
 ![](/img/in-post/istio-install_and_example/Istio-Architecture.PNG)  
 可以设想，在不久的将来，微服务的标准基础设施将是采用kubernetes进行服务部署和集群管理，采用Istio处理服务通讯和治理，两者相辅相成，缺一不可。
 
-# 安装Kubernetes
+## 安装Kubernetes
 
 Istio是微服务通讯和治理的基础设施层，本身并不负责服务的部署和集群管理，因此需要和Kubernetes等服务编排工具协同工作。
 
@@ -67,7 +70,7 @@ Rancher Server: 10.12.25.60
 
 通过Rancher安装Kubernetes集群的简要步骤如下：
 
-## 在server和工作节点上安装docker
+### 在server和工作节点上安装docker
 
 因为k8s并不支持最新版本的docker，因此需根据该页面安装指定版本的docker  
 [http://rancher.com/docs/rancher/v1.6/en/hosts/](http://rancher.com/docs/rancher/v1.6/en/hosts/) ,目前是1.12版本。
@@ -76,13 +79,13 @@ Rancher Server: 10.12.25.60
 curl https://releases.rancher.com/install-docker/1.12.sh | sh
 ```
 
-## 启动Rancher server
+### 启动Rancher server
 
 ```
 sudo docker run -d --restart=always -p 8080:8080 rancher/server
 ```
 
-## 登录Rancher管理界面，创建k8s集群
+### 登录Rancher管理界面，创建k8s集群
 
 Rancher 管理界面的缺省端口为8080，在浏览器中打开该界面，通过菜单Default-&gt;Manage Environment-&gt;Add Environment添加一个kubernetes集群。这里需要输入名称kubernetes，描述，然后选择kubernetes template，点击create，创建Kubernetes环境。![](/img/in-post/istio-install_and_example/Rancher.PNG)
 
@@ -92,7 +95,7 @@ Rancher 管理界面的缺省端口为8080，在浏览器中打开该界面，�
 
 host加入cluster后Rancher会在host上pull kubernetes的images并启动kubernetes相关服务，根据安装环境所在网络情况不同需要等待几分钟到几十分钟不等。
 
-## 安装并配置kubectl
+### 安装并配置kubectl
 
 待Rancher界面提示kubernetes创建成功后，安装kubernetes命令行工具kubectl
 
@@ -106,7 +109,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 登录Rancher管理界面, 将 All Environments-&gt;kubernetes-&gt;KUBERNETES-&gt;CLI create config 的内容拷贝到~/.kube/config 中，以配置Kubectl和kubernetes server的连接信息。![](/img/in-post/istio-install_and_example/Rancher-kubectl.PNG)
 
-# 安装Istio
+## 安装Istio
 
 Istio提供了安装脚本，该脚本会根据操作系统下载相应的Istio安装包并解压到当前目录。
 
@@ -160,7 +163,7 @@ istio-pilot-2278433625-68l34     1/1       Running   0          2m
 从上面的输出可以看到，这里部署的主要是Istio控制面的服务，而数据面的网络代理要如何部署呢？  
 根据前面服务网格的架构介绍可以得知，网络代理是随着应用程序以sidecar的方式部署的，在下面部署Bookinfo示例程序时会演示如何部署网络代理。
 
-# 部署Bookinfo示例程序
+## 部署Bookinfo示例程序
 
 在下载的Istio安装包的samples目录中包含了示例应用程序。
 
@@ -190,7 +193,7 @@ reviews       10.43.219.248   <none>        9080/TCP   6m
 `http://10.12.25.116/productpage`  
 ![](/img/in-post/istio-install_and_example/Bookinfo.PNG)
 
-# 理解Istio Proxy实现原理
+## 理解Istio Proxy实现原理
 
 服务网格相对于sprint cloud等微服务代码库的一大优势是其对应用程序无侵入，在不修改应用程序代码的前提下对应用服务之间的通信进行接管，Istio是如何做到这点的呢？下面通过示例程序的部署剖析其中的原理。
 
@@ -320,7 +323,7 @@ Chain ISTIO_REDIRECT (3 references)
 
 从pod所在network namespace的iptables规则中可以看到，pod的入口和出口流量分别通过PREROUTING和OUTPUT chain指向了自定义的ISTIO\_REDIRECT chain，而ISTIO\_REDIRECT chain中的规则将所有流量都重定向到了istio proxy正在监听的15001端口中。从而实现了对应用透明的通信代理。
 
-# 测试路由规则
+## 测试路由规则
 
 多次刷新Bookinfo应用的productpage页面，我们会发现该页面中显示的Book Reviews有时候有带红星的评价信息，有时有带黑星的评价信息，有时只有文字评价信息。  
 这是因为Bookinfo应用程序部署了3个版本的Reviews服务，每个版本的返回结果不同，在没有设置路由规则时，缺省的路由会将请求随机路由到每个版本的服务上，如下图所示：
@@ -359,7 +362,7 @@ istioctl delete -f route_rule.yaml -n default
 
 继续刷新productpage页面,将重新随机出现三个版本的评价内容页面。
 
-# 分布式调用追踪
+## 分布式调用追踪
 
 首先修改安装包中的 `istio-0.2.10/install/kubernetes/addons/zipkin.yaml` 部署文件，增加Nodeport,以便能在kubernetes集群外部访问zipkin界面。
 
@@ -389,7 +392,7 @@ kubectl apply -f istio-0.2.10/install/kubernetes/addons/zipkin.yaml
 `http://10.12.25.116:30001`  
 ![](/img/in-post/istio-install_and_example/zipkin.PNG)
 
-# 性能指标监控
+## 性能指标监控
 
 首先修改安装包中的 `istio-0.2.10/install/kubernetes/addons/grafana.yaml` 部署文件，增加Nodeport,以便能在kubernetes集群外部访问grafana界面。
 
@@ -423,7 +426,7 @@ kubectl apply -f istio-0.2.10/install/kubernetes/addons/grafana.yaml
 然后打开grafana页面查看性能指标`http://10.12.25.116:30002/dashboard/db/istio-dashboard`，如下图所示：  
 ![](/img/in-post/istio-install_and_example/grafana.PNG)
 
-# 参考
+## 参考
 
 * [Istio官方文档](https://istio.io/docs/)
 * [Pattern: Service Mesh](http://philcalcado.com/2017/08/03/pattern_service_mesh.html)

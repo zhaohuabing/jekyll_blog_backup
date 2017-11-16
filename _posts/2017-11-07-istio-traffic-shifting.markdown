@@ -17,6 +17,9 @@ tags:
     
 ---
 
+## 目录
+{:.no_toc}
+
 * 目录
 {:toc}
 
@@ -28,7 +31,7 @@ tags:
 
 为简单起见，本任务将采用两步将流量从`reviews:v1` 迁移到 `reviews:v3`，权重分别为50%，100%。
 
-## 开始之前
+### 开始之前
 
 * 参照文档[安装指南](http://istio.doczh.cn/docs/setup/kubernetes/index.html)中的步骤安装Istio。
 
@@ -37,7 +40,7 @@ tags:
 >  请注意：本文档假设示采用kubernetes部署示例应用程序。所有的示例命令行都采用规则yaml文件（例如`samples/bookinfo/kube/route-rule-all-v1.yaml`）指定的kubernetes版本。如果在不同的环境下运行本任务，请将`kube`修改为运行环境中相应的目录（例如，对基于Consul的运行环境，目录就是`samples/bookinfo/consul/route-rule-all-v1.yaml`）。
 
 
-## 基于权重的版本路由
+### 基于权重的版本路由
 
 1. 将所有微服务的缺省版本设置为v1.
 
@@ -76,7 +79,7 @@ tags:
 
    此时，以任何用户登录到`productpage`页面，都可以看到带红星的评价信息。
 
-## 理解原理
+### 理解原理
 
 在这个任务中，我们使用了Istio的带权重路由的特性将流量从老版本的`reviews`服务逐渐迁移到了新版本服务中。
 
@@ -84,7 +87,7 @@ tags:
 
 想了解更多支持scaling的按版本路由功能，请查看[Canary Deployments using Istio](https://istio.io/blog/canary-deployments-using-istio.html)。
 
-## 清理
+### 清理
 
 * 删除路由规则。
 
@@ -95,6 +98,6 @@ tags:
 * 如果不打算尝试后面的任务，请参照[BookInfo cleanup](http://istio.doczh.cn/docs/guides/bookinfo.html#cleanup) 中的步骤关闭应用程序。
 
 
-## 进阶阅读
+### 进阶阅读
 
 * 更多的内容请参见[请求路由](http://istio.doczh.cn/docs/concepts/traffic-management/rules-configuration.html)。
