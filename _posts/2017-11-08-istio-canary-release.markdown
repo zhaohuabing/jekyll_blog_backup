@@ -18,10 +18,12 @@ tags:
     - 灰度发布
 ---
 
+## 目录
+
 * 目录
 {:toc}
 
-# 灰度发布（又名金丝雀发布）介绍
+## 灰度发布（又名金丝雀发布）介绍
 
 当应用上线以后，运维面临的一大挑战是如何能够在不影响已上线业务的情况下进行升级。做过产品的同学都清楚，不管在发布前做过多么完备的自动化和人工测试，在发布后都会出现或多或少的故障。根据墨菲定律，可能会出错的版本发布一定会出错。
 
@@ -46,7 +48,7 @@ tags:
 - 如果在线测试顺利，则逐渐把生产流量按一定策略逐渐导入到新版本服务器中。
 - 待新版本服务稳定运行后，删除老版本服务。
 
-# Istio实现灰度发布(金丝雀发布)的原理
+## Istio实现灰度发布(金丝雀发布)的原理
 从上面的流程可以看到，如果要实现一套灰度发布的流程，需要应用程序和运维流程对该发布过程进行支持，工作量和难度的挑战是非常大的。虽然面对的问题类似，但每个企业或组织一般采用不同的私有化实现方案来进行灰度发布,为解决该问题导致研发和运维花费了大量的成本。
 
 Istio通过高度的抽象和良好的设计采用一致的方式解决了该问题，采用sidecar对应用流量进行了转发，通过Pilot下发路由规则，可以在不修改应用程序的前提下实现应用的灰度发布。
@@ -56,9 +58,9 @@ Istio通过高度的抽象和良好的设计采用一致的方式解决了该问
 采用Istio后，可以通过定制路由规则将特定的流量（如指定特征的用户）导入新版本服务中，在生产环境下进行测试，同时通过渐进受控地导入生产流量，可以最小化升级中出现的故障对用户的影响。并且在同时存在新老版本服务时，还可根据应用压力对不同版本的服务进行独立的缩扩容，非常灵活。采用Istio进行灰度发布的流程如下图所示：
 ![Istio灰度发布示意图](\img\in-post\istio-canary-release\canary-deployments.gif)
 
-# 操作步骤
+## 操作步骤
 下面采用Istion自带的BookinfoInfo示例程序来试验灰度发布的流程。
-## 测试环境安装
+### 测试环境安装
 首先参考[手把手教你从零搭建Istio及Bookinfo示例程序](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)安装Kubernetes及Istio控制面。
 
 因为本试验并不需要安装全部3个版本的reviews服务，因此如果已经安装了该应用，先采用下面的命令卸载。
@@ -66,7 +68,7 @@ Istio通过高度的抽象和良好的设计采用一致的方式解决了该问
 ```
 istio-0.2.10/samples/bookinfo/kube/cleanup.sh
 ```
-## 部署V1版本的服务
+### 部署V1版本的服务
 
 首先只部署V1版本的Bookinfo应用程序。由于示例中的yaml文件中包含了3个版本的reviews服务，我们先将V2和V3版本的Deployment从yaml文件istio-0.2.10/samples/bookinfo/kube/bookinfo.yaml中删除。
 
@@ -138,7 +140,7 @@ reviews-v1-1360980140-0zs9z       2/2       Running   0          2m
 此时系统中微服务的部署情况如下图所示（下面的示意图均忽略和本例关系不大的details和ratings服务）：
 ![](/img/in-post/istio-canary-release/canary-example-only-v1.PNG)
 
-## 部署V2版本的reviews服务
+### 部署V2版本的reviews服务
 在部署V2版本的reviews服务前，需要先创建一条缺省路由规则route-rule-default-reviews.yaml，将所有生产流量都导向V1版本，避免对线上用户的影响。
 
 ```
@@ -189,7 +191,7 @@ kubectl apply -f <(istioctl kube-inject -f  bookinfo-reviews-v2.yaml)
 ![](/img/in-post/istio-canary-release/canary-example-deploy-v2.PNG)
 
 
-## 将测试流量导入到V2版本的reviews服务
+### 将测试流量导入到V2版本的reviews服务
 在进行模拟测试时，由于测试环境和生产环境的网络，服务器，操作系统等环境存在差异，很难完全模拟生产环境进行测试。为了减少环境因素的对测试结果的影响，我们希望能在生产环境中进行上线前的测试，但如果没有很好的隔离措施，可能会导致测试影响已上线的业务，对企业造成损失。
 
 通过采用Istio的路由规则，可以在类生产环境中进行测试，又完全隔离了线上用户的生产流量和测试流量，最小化模拟测试对已上线业务的影响。如下图所示：
@@ -228,7 +230,7 @@ istioctl create -f route-rule-test-reviews-v2.yaml -n default
 注销test-user，只能看到V1版本不带星级的评价页面。如下图所示：
 ![](/img/in-post/istio-canary-release/product-page-default.PNG)
 
-## 将部分生产流量导入到V2版本的reviews服务
+### 将部分生产流量导入到V2版本的reviews服务
 
 在线上模拟测试完成后，如果系统测试情况良好，可以通过规则将一部分用户流量导入到V2版本的服务中，进行小规模的“金丝雀”测试。
 
@@ -261,7 +263,7 @@ istioctl replace -f route-rule-default-reviews.yaml -n default
 此时系统部署如下图所示：
 ![](/img/in-post/istio-canary-release/canary-example-route-production-50.PNG)
 
-## 将所有生产流量导入到到V2版本的reviews服务
+### 将所有生产流量导入到到V2版本的reviews服务
 
 如果新版本的服务运行正常，则可以将所有流量导入到V2版本。
 
@@ -291,7 +293,7 @@ istioctl replace -f route-rule-default-reviews.yaml -n default
 
 >  备注：如果灰度发布的过程中新版本的服务出现问题，则可以通过修改路由规则，将流量重新导入到V1版本的服务中，将V2版本故障修复后再进行测试。
 
-## 删除V1版本的reviews服务
+### 删除V1版本的reviews服务
 
 待V2版本上线稳定运行后，删除V1版本的reviews服务和测试规则。
 ```
@@ -300,7 +302,7 @@ kubectl delete pod reviews-v1-1360980140-0zs9z
 istioctl delete -f route-rule-test-reviews-v2.yaml -n default
 ```
 
-# 参考
+## 参考
 
 * [Istio官方文档](https://istio.io/docs/)
 

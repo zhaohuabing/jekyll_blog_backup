@@ -213,13 +213,13 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js",function(){
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
         anchors.options = {
           visible: 'always',
           placement: 'right',
           icon: '#'
         };
-        anchors.add().remove('.subheading').remove('.sidebar-container h5');
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
     })
 </script>
 
