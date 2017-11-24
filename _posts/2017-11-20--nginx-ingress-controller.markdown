@@ -5,7 +5,7 @@ subtitle:   "如何向外暴露Kubernetes集群中的服务"
 date:       2017-11-20 12:00:00
 author:     "赵化冰"
 header-img: "img/post-bg-2015.jpg"
-published: true
+published: false
 tags:
     - Kubernetes
     - Ingress
