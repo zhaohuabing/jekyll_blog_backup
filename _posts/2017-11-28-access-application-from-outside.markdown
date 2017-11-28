@@ -6,7 +6,7 @@ description: "我们知道，kubernetes的Cluster Network属于内部网络，�
 date:       2017-11-28 12:00:00
 author:     "赵化冰"
 header-img: "img/post-bg-2015.jpg"
-published: false
+published: true
 tags:
     - Kubernetes
     - Ingress
