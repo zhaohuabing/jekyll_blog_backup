@@ -30,7 +30,7 @@ tags:
 
 ## Pod和Service
 
-简单地说，Service是一个对Pod的逻辑抽象通信层。在Kubernetes集群中，Pod是应用部署的基本单元，会不停地被创建，销毁，缩扩容等，kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址也不是固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
+简单地说，Service是一个对Pod的逻辑抽象层。在Kubernetes集群中，Pod是应用部署的基本单元，会不停地被创建，销毁，缩扩容等，kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址也不是固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
 
 为了解决该问题，Kubernetes采用了Service的概念，Service是对后端提供某一种服务的Pod集合的抽象，Service会绑定到一个固定的虚拟IP上，该虚拟IP只在Kubernetes Cluster中可见，但其实该IP并不对应一个虚拟或者物理设备，而只是IPtable中的规则，然后再通过IPtable将服务请求路由到后端的Pod中。通过这种方式，可以确保服务客户端一直可以稳定地访问Pod提供的服务，而不用关心Pod的创建、删除、迁移等变化。
 
@@ -157,7 +157,7 @@ $ neutron lb-member-list
 但是如果客户端不在Openstack Neutron的私有子网上，则还需要在load balancer的VIP上关联一个floating IP，以使外部客户端可以连接到load balancer。
 
 部署Load balancer后，应用的拓扑结构如下图所示：
-![外部Load balancer](\img\in-post\access-application-from-outside\laod-balancer.PNG)
+![外部Load balancer](\img\in-post\access-application-from-outside\load-balancer.PNG)
 
 >如果kubernetes环境在Public Cloud上，Loadbalancer类型的Service创建出的外部Load Balancer是可以直接从外部网络进行访问的，不需要绑定floating IP这个步骤。例如在AWS上创建的Elastic Load Balancing (ELB)，有兴趣可以看一下这篇文章：[Expose Services on your AWS Quick Start Kubernetes cluster]( http://docs.heptio.com/content/tutorials/aws-qs-services-elb.html)。
 
