@@ -36,7 +36,7 @@ tags:
 
 Pod(容器组),英文中Pod是豆荚的意思，从名字的含义可以看出，Pod是一组有依赖关系的容器，Pod包含的容器都会运行在同一个host节点上，共享相同的volumes和network namespace空间。Kubernetes以Pod为基本操作单元，可以同时启动多个相同的pod用于failover或者load balance。
 
-![Pod](\img\in-post\access-application-from-outside\pod.png)
+![Pod](\img\in-post\access-application-from-outside\pod.PNG)
 
 Pod的生命周期是短暂的，Kubernetes根据应用的配置，会对Pod进行创建，销毁，根据监控指标进行缩扩容。kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址是不固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
 
