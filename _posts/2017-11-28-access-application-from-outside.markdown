@@ -26,16 +26,20 @@ tags:
 
 我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。
 
-我尽量试着把本文涉及的内容写得比较容易理解，但要做到“深入浅出”，把复杂的事情用通俗易懂的语言描述出来是一件很需要功力的事情，尚未达到此境界，唯有不断努力。另外kubernetes本身就是一个比较复杂的系统，无法在本文中详细解释涉及的所有相关概念，否则就脱离了文章的主题，因此假设阅读此文之前你对kubernetes的基本概念如container，pod已经docker都有所了解。
+>我尽量试着把本文涉及的内容写得比较容易理解，但要做到“深入浅出”，把复杂的事情用通俗易懂的语言描述出来是非常需要功力的，个人自认尚未达到此境界，唯有不断努力。此外，kubernetes本身是一个比较复杂的系统，无法在本文中详细解释涉及的所有相关概念，否则就可能脱离了文章的主题，因此假设阅读此文之前你对kubernetes的基本概念如docker，container，pod已有所了解。
 
 另外此文中的一些内容是自己的理解，由于个人的知识范围有限，可能有误，如果读者对文章中的内容有疑问或者勘误，欢迎大家指证。
 
 ## Pod和Service
 
-我们首先来了解一些Kubernetes中的Pod和Service。
+我们首先来了解一下Kubernetes中的Pod和Service的概念。
 
-Pod(容器组),英文中Pod是豆荚的意思，从名字的含义可以看出，Pod是一组有依赖关系的容器，Pod包含的容器都会运行在同一个节点上，共享相同的volumes和network namespace空间。Kubernetes以Pod为基本操作单元，可以同时启动多个相同的pod用于failover或者load balance。Pod的生命周期是短暂的，Kubernetes根据应用的配置，会对Pod进行创建，销毁，根据监控指标进行缩扩容。kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址是不固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
+Pod(容器组),英文中Pod是豆荚的意思，从名字的含义可以看出，Pod是一组有依赖关系的容器，Pod包含的容器都会运行在同一个host节点上，共享相同的volumes和network namespace空间。Kubernetes以Pod为基本操作单元，可以同时启动多个相同的pod用于failover或者load balance。
+
 ![Pod](\img\in-post\access-application-from-outside\pod.png)
+
+Pod的生命周期是短暂的，Kubernetes根据应用的配置，会对Pod进行创建，销毁，根据监控指标进行缩扩容。kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址是不固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
+
 
 为了解决访问Pod不方便直接访问的问题，Kubernetes采用了Service的概念，Service是对后端提供服务的一组Pod的抽象，Service会绑定到一个固定的虚拟IP上，该虚拟IP只在Kubernetes Cluster中可见，但其实该IP并不对应一个虚拟或者物理设备，而只是IPtable中的规则，然后再通过IPtable将服务请求路由到后端的Pod中。通过这种方式，可以确保服务消费者可以稳定地访问Pod提供的服务，而不用关心Pod的创建、删除、迁移等变化以及如何用一组Pod来进行负载均衡。
 
