@@ -168,9 +168,9 @@ $ neutron lb-member-list
 
 当只需要向外暴露一个服务的时候，可以直接采用Loadbalancer类型Service的方式。但如果一个应用对外提供多个服务，采用该方式则需要为每一个服务（IP+Port）都创建一个外部load balancer。如下图所示
 ![创建多个Load balancer暴露应用的多个服务](\img\in-post\access-application-from-outside\multiple-load-balancer.PNG)
-一般来说，同一个应用的多个服务/资源应该放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。可以通过使用Kubernetes Ingress来解决该问题。
+一般来说，同一个应用的多个服务/资源应该放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。直接将服务暴露给外部用户也导致了前端和后端的耦合，影响了后端架构的灵活性。可以通过使用Kubernetes Ingress进行L7 load balancing来解决该问题。
 
-## Ingress
+## 采用Ingress作为七层load balancer
 首先看一下引入Ingress后的应用拓扑示意图：
 ![采用Ingress暴露应用的多个服务](\img\in-post\access-application-from-outside\ingress.PNG)
 这里Ingress起到了七层负载均衡器和Http方向代理的作用，可以根据不同的url把入口流量分发到不同的后端Service。外部客户端只看到foo.bar.com这个服务器，屏蔽了内部多个Service的实现方式。采用这种方式，简化了客户端的访问方式，并增加了后端实现和部署的灵活性，可以在不影响客户端的情况下对后端的服务部署进行调整。
@@ -199,9 +199,9 @@ spec:
           servicePort: 80
 ```
 
-注意这里Ingress只描述了一个虚拟主机路径分发的需求，实际上可以定义多个Ingress，描述不同的7层代理需求，而这些需求是由Ingress Controller来实现的。Ingress Contorller会监听Kubernetes Master得到Ingress的定义，并根据Ingress的定义对一个7层代理进行相应的配置，以实现Ingress定义中要求的虚拟主机和路径分发规则。Ingress Controller有多种实现，Kubernetes提供了一个[基于Nginx的Ingress Controller](https://github.com/kubernetes/ingress-nginx)。部署Kubernetes集群时并不会缺省部署Ingress Controller，需要自行部署。
+注意这里Ingress只描述了一个虚拟主机路径分发的要求，实际上可以定义多个Ingress，描述不同的7层分发要求，而这些要求需要由一个Ingress Controller来实现。Ingress Contorller会监听Kubernetes Master得到Ingress的定义，并根据Ingress的定义对一个7层代理进行相应的配置，以实现Ingress定义中要求的虚拟主机和路径分发规则。Ingress Controller有多种实现，Kubernetes提供了一个[基于Nginx的Ingress Controller](https://github.com/kubernetes/ingress-nginx)。在部署Kubernetes集群时并不会缺省部署Ingress Controller，需要自行部署。
 
-下面是部署Nginx Ingress Controller的配置文件示例：
+下面是部署Nginx Ingress Controller的配置文件示例，注意这里为Nginx Ingress Controller定义了一个LoadBalancer类型的Service，以为Ingress Controller提供一个外部可以访问的公网IP。
 
 ```
 apiVersion: v1
@@ -235,10 +235,13 @@ spec:
         - name: nginx-ingress-controller
           image: gcr.io/google_containers/nginx-ingress-controller:0.8.3
           imagePullPolicy: Always
-    //omitted for brevity
+    //----omitted for brevity----
 ```
 
 >Google Cloud直接支持Ingress资源，如果应用部署在Google Cloud中，Google Cloud会自动为Ingress资源创建一个7层load balancer，并为之分配一个外部IP，不需要自行部署Ingress Controller。
+
+## 结论
+采用Ingress加上Load balancer的方式可以将Kubernetes Cluster中的应用服务暴露给外部客户端。这种方式比较灵活，基本可以满足大部分应用的需要。但如果需要在入口处提供更强大的功能，如更高的效率要求，安全认证，日志记录等，或者需要一些应用的定制逻辑，则需要考虑采用微服务架构中的API Gateway模式，采用一个更强大的API Gateway来作为应用的流量入口。
 
 ## 参考
 
