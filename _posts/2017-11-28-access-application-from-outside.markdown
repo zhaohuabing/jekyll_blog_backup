@@ -24,7 +24,7 @@ tags:
 
 ## 前言
 
-我们知道，kubernetes的Cluster Network属于内部网络，缺省情况下只能在cluster Network内部才能访问部署的应用，那如何才能从外部网络s访问Kubernetes集群中的应用呢？本文介绍了从外部访问kubernetes cluster中应用的几种实现方式。
+我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文介绍了从外部访问kubernetes cluster中应用的几种实现方式。
 
 我们首先来了解一些Kubernetes中Service的基本概念。
 
@@ -32,13 +32,15 @@ tags:
 
 简单地说，Service是一个对Pod的逻辑抽象层。在Kubernetes集群中，Pod是应用部署的基本单元，会不停地被创建，销毁，缩扩容等，kubernetes在创建Pod时可以选择集群中的任何一台空闲的Host，因此其网络地址也不是固定的。由于Pod的这一特点，一般不建议直接通过Pod的地址去访问应用。
 
-为了解决该问题，Kubernetes采用了Service的概念，Service是对后端提供某一种服务的Pod集合的抽象，Service会绑定到一个固定的虚拟IP上，该虚拟IP只在Kubernetes Cluster中可见，但其实该IP并不对应一个虚拟或者物理设备，而只是IPtable中的规则，然后再通过IPtable将服务请求路由到后端的Pod中。通过这种方式，可以确保服务客户端一直可以稳定地访问Pod提供的服务，而不用关心Pod的创建、删除、迁移等变化。
+为了解决该问题，Kubernetes采用了Service的概念，Service是对后端提供服务的一组Pod的抽象，Service会绑定到一个固定的虚拟IP上，该虚拟IP只在Kubernetes Cluster中可见，但其实该IP并不对应一个虚拟或者物理设备，而只是IPtable中的规则，然后再通过IPtable将服务请求路由到后端的Pod中。通过这种方式，可以确保服务消费者可以稳定地访问Pod提供的服务，而不用关心Pod的创建、删除、迁移等变化以及如何用一组Pod来进行负载均衡。
 
-如下图所示，Kube-proxy监听kubernetes master增加和删除Service以及Endpoint的消息，对于每一个Service，kube proxy创建相应的iptables规则，将发送到Service Cluster IP的流量转发到Service后端提供服务的Pod的相应端口上。
+Service的机制如下图所示，Kube-proxy监听kubernetes master增加和删除Service以及Endpoint的消息，对于每一个Service，kube proxy创建相应的iptables规则，将发送到Service Cluster IP的流量转发到Service后端提供服务的Pod的相应端口上。
 ![Pod和Service的关系](\img\in-post\access-application-from-outside\services-iptables-overview.png)
 
+>备注：可以通过Service的Cluster IP和服务端口访问到后端Pod提供的服务，但该Cluster IP是Ping不通的，原因是Cluster IP只是iptable中的规则，并不对应到一个网络设备。
+
 ## Service的类型
-Service的类型(ServiceType)决定了Service如何暴露其提供的服务，根据类型不同，服务可以只在Kubernetes cluster中可见，也可以暴露到Cluster外部。Service有三种类型，ClusterIP，NodePort和LoadBalancer。其中ClusterIP Service的缺省类型，这种类型的服务会提供一个只能在Cluster内部可以访问的内部虚拟IP，如上面一节所述。
+Service的类型(ServiceType)决定了Service如何对外提供服务，根据类型不同，服务可以只在Kubernetes cluster中可见，也可以暴露到Cluster外部。Service有三种类型，ClusterIP，NodePort和LoadBalancer。其中ClusterIP是Service的缺省类型，这种类型的服务会提供一个只能在Cluster内部可以访问的内部虚拟IP，如上面一节所述。
 
 ## 通过NodePort从外部访问
 
@@ -166,13 +168,77 @@ $ neutron lb-member-list
 
 当只需要向外暴露一个服务的时候，可以直接采用Loadbalancer类型Service的方式。但如果一个应用对外提供多个服务，采用该方式则需要为每一个服务（IP+Port）都创建一个外部load balancer。如下图所示
 ![创建多个Load balancer暴露应用的多个服务](\img\in-post\access-application-from-outside\multiple-load-balancer.PNG)
-我们一般希望在同一个域名下向外部用户暴露一个应用的多个服务，创建多个Load balancer带来了额外的开销和管理成本，可以通过Kubernetes Ingress来解决该问题。
+一般来说，同一个应用的多个服务/资源应该放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。可以通过使用Kubernetes Ingress来解决该问题。
 
 ## Ingress
 首先看一下引入Ingress后的应用拓扑示意图：
 ![采用Ingress暴露应用的多个服务](\img\in-post\access-application-from-outside\ingress.PNG)
+这里Ingress起到了七层负载均衡器和Http方向代理的作用，可以根据不同的url把入口流量分发到不同的后端Service。外部客户端只看到foo.bar.com这个服务器，屏蔽了内部多个Service的实现方式。采用这种方式，简化了客户端的访问方式，并增加了后端实现和部署的灵活性，可以在不影响客户端的情况下对后端的服务部署进行调整。
 
+下面是Kubernetes Ingress配置文件的示例，在虚拟主机foot.bar.com下面定义了两个Path，其中/foo被分发到后端服务s1，/bar被分发到后端服务s2。
 
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: foo.bar.com
+    http:
+      paths:
+      - path: /foo
+        backend:
+          serviceName: s1
+          servicePort: 80
+      - path: /bar
+        backend:
+          serviceName: s2
+          servicePort: 80
+```
+
+注意这里Ingress只描述了一个虚拟主机路径分发的需求，实际上可以定义多个Ingress，描述不同的7层代理需求，而这些需求是由Ingress Controller来实现的。Ingress Contorller会监听Kubernetes Master得到Ingress的定义，并根据Ingress的定义对一个7层代理进行相应的配置，以实现Ingress定义中要求的虚拟主机和路径分发规则。Ingress Controller有多种实现，Kubernetes提供了一个[基于Nginx的Ingress Controller](https://github.com/kubernetes/ingress-nginx)。部署Kubernetes集群时并不会缺省部署Ingress Controller，需要自行部署。
+
+下面是部署Nginx Ingress Controller的配置文件示例：
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      name: http
+    - port: 443
+      name: https
+  selector:
+    k8s-app: nginx-ingress-lb
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        k8s-app: nginx-ingress-lb
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: nginx-ingress-controller
+          image: gcr.io/google_containers/nginx-ingress-controller:0.8.3
+          imagePullPolicy: Always
+    //omitted for brevity
+```
+
+>Google Cloud直接支持Ingress资源，如果应用部署在Google Cloud中，Google Cloud会自动为Ingress资源创建一个7层load balancer，并为之分配一个外部IP，不需要自行部署Ingress Controller。
 
 ## 参考
 
