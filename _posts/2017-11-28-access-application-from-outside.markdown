@@ -24,9 +24,9 @@ tags:
 
 ## 前言
 
-我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文介绍了从外部访问kubernetes cluster中应用的几种实现方式。
+我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。
 
-我们首先来了解一些Kubernetes中Service的基本概念。
+我们首先来了解一些Kubernetes中的基本概念。
 
 ## Pod和Service
 
@@ -37,16 +37,16 @@ tags:
 Service的机制如下图所示，Kube-proxy监听kubernetes master增加和删除Service以及Endpoint的消息，对于每一个Service，kube proxy创建相应的iptables规则，将发送到Service Cluster IP的流量转发到Service后端提供服务的Pod的相应端口上。
 ![Pod和Service的关系](\img\in-post\access-application-from-outside\services-iptables-overview.png)
 
->备注：可以通过Service的Cluster IP和服务端口访问到后端Pod提供的服务，但该Cluster IP是Ping不通的，原因是Cluster IP只是iptable中的规则，并不对应到一个网络设备。
+>备注：虽然可以通过Service的Cluster IP和服务端口访问到后端Pod提供的服务，但该Cluster IP是Ping不通的，原因是Cluster IP只是iptable中的规则，并不对应到一个网络设备。
 
 ## Service的类型
-Service的类型(ServiceType)决定了Service如何对外提供服务，根据类型不同，服务可以只在Kubernetes cluster中可见，也可以暴露到Cluster外部。Service有三种类型，ClusterIP，NodePort和LoadBalancer。其中ClusterIP是Service的缺省类型，这种类型的服务会提供一个只能在Cluster内部可以访问的内部虚拟IP，如上面一节所述。
+Service的类型(ServiceType)决定了Service如何对外提供服务，根据类型不同，服务可以只在Kubernetes cluster中可见，也可以暴露到Cluster外部。Service有三种类型，ClusterIP，NodePort和LoadBalancer。其中ClusterIP是Service的缺省类型，这种类型的服务会提供一个只能在Cluster内才能访问的虚拟IP，其实现机制如上面一节所述。
 
-## 通过NodePort从外部访问
+## 通过NodePort提供外部访问入口
 
 通过将Service的类型设置为NodePort，可以在Cluster中的主机上通过一个指定端口暴露服务。注意通过Cluster中每台主机上的该指定端口都可以访问到该服务，发送到该主机端口的请求会被kubernetes路由到提供服务的Pod上。采用这种服务类型，可以在kubernetes cluster网络外通过主机IP：端口的方式访问到服务。
 
-> 注意：官方文档中说明了Kubernetes clusterIp的流量转发到后端Pod有Iptable和kube proxy两种方式。但对Nodeport如何转发流量却语焉不详。该图来自网络，从图来看是通过kube proxy转发的，我没有去研究过源码。欢迎看过源码的同学指教。
+> 注意：官方文档中说明了Kubernetes clusterIp的流量转发到后端Pod有Iptable和kube proxy两种方式。但对Nodeport如何转发流量却语焉不详。该图来自网络，从图来看是通过kube proxy转发的，我没有去研究过源码。欢迎了解的同学跟帖说明。
 
 ![Pod和Service的关系](\img\in-post\access-application-from-outside\nodeport.PNG)
 
@@ -66,17 +66,17 @@ spec:
     name: influxdb
 ```
 
-通过NodePort从外部访问有下面的一些问题，玩玩可以，但不适宜用于生产环境。
+通过NodePort从外部访问有下面的一些问题，自己玩玩或者进行测试时可以使用该方案，但不适宜用于生产环境。
 
-* Kubernetes cluster host的IP必须是一个well known IP，即客户端必须知道该IP。由于一般来讲Cluster中的host是作为资源池看待的，可以增加删除，IP一般也是动态分配的，因此并不能假设host IP对客户端而言是well-known IP。
+* Kubernetes cluster host的IP必须是一个well-known IP，即客户端必须知道该IP。但Cluster中的host是被作为资源池看待的，可以增加删除，每个host的IP一般也是动态分配的，因此并不能认为host IP对客户端而言是well-known IP。
 
-* 客户端访问某一个固定的host IP存在单点故障，假如该host宕机，虽然kubernetes cluster可以把应用 reload到另一节点上，但客户端就无法通过该host的nodeport访问应用了。
+* 客户端访问某一个固定的host IP存在单点故障。假如一台host宕机了，kubernetes cluster会把应用 reload到另一节点上，但客户端就无法通过该host的nodeport访问应用了。
 
 * 该方案假设客户端可以访问Kubernetes host所在网络。在生产环境中，客户端和Kubernetes host网络可能是隔离的。例如客户端可能是公网中的一个手机APP，是无法直接访问host所在的私有网络的。
 
-因此，需要通过一个外部Load Balancer来将外部客户端的流量导入到Cluster中的应用中。
+因此，需要通过一个网关来将外部客户端的请求导入到Cluster中的应用中，在kubernetes中，这个网关是一个4层的load balancer。
 
-## 通过Load Balancer从外部访问
+## 通过Load Balancer提供外部访问入口
 
 通过将Service的类型设置为LoadBalancer，可以为Service创建一个外部Load Balancer。Kubernetes的文档中声明该Service类型需要云服务提供商的支持，其实这里只是在Kubernetes配置文件中提出了一个要求，即为该Service创建Load Balancer，至于如何创建则是由Google Cloud或Amazon Cloud等云服务商提供的，创建的Load Balancer不在Kubernetes Cluster的管理范围中。kubernetes 1.6版本中，WS, Azure, CloudStack, GCE and OpenStack等云提供商已经可以为Kubernetes提供Load Balancer.下面是一个Load balancer类型的Service例子：
 
@@ -158,22 +158,22 @@ $ neutron lb-member-list
 
 但是如果客户端不在Openstack Neutron的私有子网上，则还需要在load balancer的VIP上关联一个floating IP，以使外部客户端可以连接到load balancer。
 
-部署Load balancer后，应用的拓扑结构如下图所示：
+部署Load balancer后，应用的拓扑结构如下图所示（注：本图假设Kubernetes Cluster部署在Openstack私有云上）。
 ![外部Load balancer](\img\in-post\access-application-from-outside\load-balancer.PNG)
 
->如果kubernetes环境在Public Cloud上，Loadbalancer类型的Service创建出的外部Load Balancer是可以直接从外部网络进行访问的，不需要绑定floating IP这个步骤。例如在AWS上创建的Elastic Load Balancing (ELB)，有兴趣可以看一下这篇文章：[Expose Services on your AWS Quick Start Kubernetes cluster]( http://docs.heptio.com/content/tutorials/aws-qs-services-elb.html)。
+>备注：如果kubernetes环境在Public Cloud上，Loadbalancer类型的Service创建出的外部Load Balancer已经带有公网IP地址，是可以直接从外部网络进行访问的，不需要绑定floating IP这个步骤。例如在AWS上创建的Elastic Load Balancing (ELB)，有兴趣可以看一下这篇文章：[Expose Services on your AWS Quick Start Kubernetes cluster]( http://docs.heptio.com/content/tutorials/aws-qs-services-elb.html)。
 
-如果Kubernetes Cluster不是在支持Load balancer的cloud provider或者裸机上创建的，可以实现LoadBalancer类型的Service吗？Kubernetes本身并不直接支持Loadbalancer，但我们应可以通过对Kubernetes进行扩展来实现，可以监听kubernetes API server的service创建消息，并根据消息部署相应的Load Balancer，例如配置Nginx的虚拟主机，来实现Load balancer类型的Service。
+如果Kubernetes Cluster是在不支持LoadBalancer特性的cloud provider或者裸机上创建的，可以实现LoadBalancer类型的Service吗？应该也是可以的。Kubernetes本身并不直接支持Loadbalancer，但我们可以通过对Kubernetes进行扩展来实现，可以监听kubernetes Master的service创建消息，并根据消息部署相应的Load Balancer（如Nginx或者HAProxy），来实现Load balancer类型的Service。
 
 
-当只需要向外暴露一个服务的时候，可以直接采用Loadbalancer类型Service的方式。但如果一个应用对外提供多个服务，采用该方式则需要为每一个服务（IP+Port）都创建一个外部load balancer。如下图所示
+通过设置Service类型提供的是四层Load Balancer，当只需要向外暴露一个服务的时候，可以直接采用这种方式。但在一个应用需要对外提供多个服务时，采用该方式会为每一个服务（IP+Port）都创建一个外部load balancer。如下图所示
 ![创建多个Load balancer暴露应用的多个服务](\img\in-post\access-application-from-outside\multiple-load-balancer.PNG)
-一般来说，同一个应用的多个服务/资源应该放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。直接将服务暴露给外部用户也导致了前端和后端的耦合，影响了后端架构的灵活性。可以通过使用Kubernetes Ingress进行L7 load balancing来解决该问题。
+一般来说，同一个应用的多个服务/资源会放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。直接将服务暴露给外部用户也会导致了前端和后端的耦合，影响了后端架构的灵活性，如果以后由于业务需求对服务进行调整会直接影响到客户端。可以通过使用Kubernetes Ingress进行L7 load balancing来解决该问题。
 
 ## 采用Ingress作为七层load balancer
-首先看一下引入Ingress后的应用拓扑示意图：
+首先看一下引入Ingress后的应用拓扑示意图（注：本图假设Kubernetes Cluster部署在Openstack私有云上）。
 ![采用Ingress暴露应用的多个服务](\img\in-post\access-application-from-outside\ingress.PNG)
-这里Ingress起到了七层负载均衡器和Http方向代理的作用，可以根据不同的url把入口流量分发到不同的后端Service。外部客户端只看到foo.bar.com这个服务器，屏蔽了内部多个Service的实现方式。采用这种方式，简化了客户端的访问方式，并增加了后端实现和部署的灵活性，可以在不影响客户端的情况下对后端的服务部署进行调整。
+这里Ingress起到了七层负载均衡器和Http方向代理的作用，可以根据不同的url把入口流量分发到不同的后端Service。外部客户端只看到foo.bar.com这个服务器，屏蔽了内部多个Service的实现方式。采用这种方式，简化了客户端的访问，并增加了后端实现和部署的灵活性，可以在不影响客户端的情况下对后端的服务部署进行调整。
 
 下面是Kubernetes Ingress配置文件的示例，在虚拟主机foot.bar.com下面定义了两个Path，其中/foo被分发到后端服务s1，/bar被分发到后端服务s2。
 
@@ -199,7 +199,7 @@ spec:
           servicePort: 80
 ```
 
-注意这里Ingress只描述了一个虚拟主机路径分发的要求，实际上可以定义多个Ingress，描述不同的7层分发要求，而这些要求需要由一个Ingress Controller来实现。Ingress Contorller会监听Kubernetes Master得到Ingress的定义，并根据Ingress的定义对一个7层代理进行相应的配置，以实现Ingress定义中要求的虚拟主机和路径分发规则。Ingress Controller有多种实现，Kubernetes提供了一个[基于Nginx的Ingress Controller](https://github.com/kubernetes/ingress-nginx)。在部署Kubernetes集群时并不会缺省部署Ingress Controller，需要自行部署。
+注意这里Ingress只描述了一个虚拟主机路径分发的要求，可以定义多个Ingress，描述不同的7层分发要求，而这些要求需要由一个Ingress Controller来实现。Ingress Contorller会监听Kubernetes Master得到Ingress的定义，并根据Ingress的定义对一个7层代理进行相应的配置，以实现Ingress定义中要求的虚拟主机和路径分发规则。Ingress Controller有多种实现，Kubernetes提供了一个[基于Nginx的Ingress Controller](https://github.com/kubernetes/ingress-nginx)。需要注意的是，在部署Kubernetes集群时并不会缺省部署Ingress Controller，需要我们自行部署。
 
 下面是部署Nginx Ingress Controller的配置文件示例，注意这里为Nginx Ingress Controller定义了一个LoadBalancer类型的Service，以为Ingress Controller提供一个外部可以访问的公网IP。
 
@@ -238,10 +238,10 @@ spec:
     //----omitted for brevity----
 ```
 
->Google Cloud直接支持Ingress资源，如果应用部署在Google Cloud中，Google Cloud会自动为Ingress资源创建一个7层load balancer，并为之分配一个外部IP，不需要自行部署Ingress Controller。
+>备注：Google Cloud直接支持Ingress资源，如果应用部署在Google Cloud中，Google Cloud会自动为Ingress资源创建一个7层load balancer，并为之分配一个外部IP，不需要自行部署Ingress Controller。
 
 ## 结论
-采用Ingress加上Load balancer的方式可以将Kubernetes Cluster中的应用服务暴露给外部客户端。这种方式比较灵活，基本可以满足大部分应用的需要。但如果需要在入口处提供更强大的功能，如更高的效率要求，安全认证，日志记录等，或者需要一些应用的定制逻辑，则需要考虑采用微服务架构中的API Gateway模式，采用一个更强大的API Gateway来作为应用的流量入口。
+采用Ingress加上Load balancer的方式可以将Kubernetes Cluster中的应用服务暴露给外部客户端。这种方式比较灵活，基本可以满足大部分应用的需要。但如果需要在入口处提供更强大的功能，如有更高的效率要求，需求进行安全认证，日志记录，或者需要一些应用的定制逻辑，则需要考虑采用微服务架构中的API Gateway模式，采用一个更强大的API Gateway来作为应用的流量入口。
 
 ## 参考
 
