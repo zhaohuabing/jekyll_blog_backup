@@ -95,3 +95,6 @@ friends: [
 lean_cloud :
   app_id   :  Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz
   app_key  :  efUYEefAc2eIPBRO59PRERQC
+
+plugins:
+  - jekyll-sitemap
