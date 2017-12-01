@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>http://zhaohuabing.com/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/about/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/tags/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/28/access-application-from-outside/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/23/windows-proxy-scripts/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/08/istio-canary-release/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/07/istio-traffic-shifting/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/04/istio-install_and_example/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://zhaohuabing.com/2017/11/04/hello-world/</loc>
+  <lastmod>2017-11-30T07:40:09+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+</urlset>
