@@ -122,6 +122,257 @@ http://10.12.5.31:32765/productpage
 ```
 如果想要了解更多关于如何从集群外部进行访问的内容，可以参考[如何从外部访问Kubernetes集群中的应用？](http://zhaohuabing.com/2017/11/28/access-application-from-outside/)
 
+## 查看自动注入的sidecar
+使用 kubectl get pod reviews-v3-5fff595d9b-zsb2q -o yaml 命令查看Bookinfo应用的reviews服务的Pod。
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    sidecar.istio.io/status: injected-version-0.2.12
+  creationTimestamp: 2018-01-02T02:33:36Z
+  generateName: reviews-v3-5fff595d9b-
+  labels:
+    app: reviews
+    pod-template-hash: "1999151856"
+    version: v3
+  name: reviews-v3-5fff595d9b-zsb2q
+  namespace: default
+  ownerReferences:
+  - apiVersion: extensions/v1beta1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: reviews-v3-5fff595d9b
+    uid: 5599688c-ef65-11e7-8be6-fa163e160c7d
+  resourceVersion: "3757"
+  selfLink: /api/v1/namespaces/default/pods/reviews-v3-5fff595d9b-zsb2q
+  uid: 559d8c6f-ef65-11e7-8be6-fa163e160c7d
+spec:
+  containers:
+  - image: istio/examples-bookinfo-reviews-v3:0.2.3
+    imagePullPolicy: IfNotPresent
+    name: reviews
+    ports:
+    - containerPort: 9080
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-48vxx
+      readOnly: true
+  - args:
+    - proxy
+    - sidecar
+    - -v
+    - "2"
+    - --configPath
+    - /etc/istio/proxy
+    - --binaryPath
+    - /usr/local/bin/envoy
+    - --serviceCluster
+    - reviews
+    - --drainDuration
+    - 45s
+    - --parentShutdownDuration
+    - 1m0s
+    - --discoveryAddress
+    - istio-pilot.istio-system:15003
+    - --discoveryRefreshDelay
+    - 1s
+    - --zipkinAddress
+    - zipkin.istio-system:9411
+    - --connectTimeout
+    - 10s
+    - --statsdUdpAddress
+    - istio-mixer.istio-system:9125
+    - --proxyAdminPort
+    - "15000"
+    - --controlPlaneAuthPolicy
+    - NONE
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    image: nginmesh/proxy_debug:0.2.12
+    imagePullPolicy: Always
+    name: istio-proxy
+    resources: {}
+    securityContext:
+      privileged: true
+      readOnlyRootFilesystem: false
+      runAsUser: 1337
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /etc/certs/
+      name: istio-certs
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-48vxx
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  initContainers:
+  - args:
+    - -p
+    - "15001"
+    - -u
+    - "1337"
+    image: nginmesh/proxy_init:0.2.12
+    imagePullPolicy: Always
+    name: istio-init
+    resources: {}
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-48vxx
+      readOnly: true
+  nodeName: kube-2
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - name: istio-certs
+    secret:
+      defaultMode: 420
+      optional: true
+      secretName: istio.default
+  - name: default-token-48vxx
+    secret:
+      defaultMode: 420
+      secretName: default-token-48vxx
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: 2018-01-02T02:33:54Z
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: 2018-01-02T02:36:06Z
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: 2018-01-02T02:33:36Z
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://5d0c189b9dde8e14af4c8065ee5cf007508c0bb2b3c9535598d99dc49f531370
+    image: nginmesh/proxy_debug:0.2.12
+    imageID: docker-pullable://nginmesh/proxy_debug@sha256:6275934ea3a1ce5592e728717c4973ac704237b06b78966a1d50de3bc9319c71
+    lastState: {}
+    name: istio-proxy
+    ready: true
+    restartCount: 0
+    state:
+      running:
+        startedAt: 2018-01-02T02:36:05Z
+  - containerID: docker://aba3e114ac1aa87c75e969dcc1b0725696de78d3407c5341691d9db579429f28
+    image: istio/examples-bookinfo-reviews-v3:0.2.3
+    imageID: docker-pullable://istio/examples-bookinfo-reviews-v3@sha256:6e100e4805a8c10c47040ea7b66f10ad619c7e0068696032546ad3e35ad46570
+    lastState: {}
+    name: reviews
+    ready: true
+    restartCount: 0
+    state:
+      running:
+        startedAt: 2018-01-02T02:35:47Z
+  hostIP: 10.12.5.31
+  initContainerStatuses:
+  - containerID: docker://b55108625832a3205a265e8b45e5487df10276d5ae35af572ea4f30583933c1f
+    image: nginmesh/proxy_init:0.2.12
+    imageID: docker-pullable://nginmesh/proxy_init@sha256:f73b68839f6ac1596d6286ca498e4478b8fcfa834e4884418d23f9f625cbe5f5
+    lastState: {}
+    name: istio-init
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://b55108625832a3205a265e8b45e5487df10276d5ae35af572ea4f30583933c1f
+        exitCode: 0
+        finishedAt: 2018-01-02T02:33:53Z
+        reason: Completed
+        startedAt: 2018-01-02T02:33:53Z
+  phase: Running
+  podIP: 192.168.79.138
+  qosClass: BestEffort
+  startTime: 2018-01-02T02:33:39Z
+
+```
+
+该命令行输出的内容相当长，我们可以看到Pod中注入了一个 nginmesh/proxy_debug container,还增加了一个initContainer nginmesh/proxy_init。这两个容器是通过kubernetes initializer自动注入到pod中的。这两个container分别有什么作用呢？让我们看一下[Nginmesh源代码中的说明](https://github.com/nginmesh/nginmesh/tree/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent)：
+
+* proxy_debug, which comes with the agent and NGINX.
+
+* proxy_init, which is used for configuring iptables rules for transparently injecting an NGINX proxy from the proxy_debug image into an application pod.
+
+proxy_debug就是sidecar代理，proxy_init则用于配置iptable 规则，以将应用的流量导入到sidecar代理中。
+
+查看proxy_debug 的Dockerfile文件，可以看到其实是调用了[prepare_proxy.sh](https://github.com/nginmesh/nginmesh/blob/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent/docker-init/prepare_proxy.sh)这个脚本来创建iptable规则。
+
+```
+FROM debian:stretch-slim
+RUN apt-get update && apt-get install -y iptables
+ADD prepare_proxy.sh /
+ENTRYPOINT ["/prepare_proxy.sh"]
+```
+
+
+```
+...omitted for brevity 
+
+# Create a new chain for redirecting inbound and outbound traffic to
+# the common Envoy port.
+iptables -t nat -N ISTIO_REDIRECT                                             -m comment --comment "istio/redirect-common-chain"
+iptables -t nat -A ISTIO_REDIRECT -p tcp -j REDIRECT --to-port ${ENVOY_PORT}  -m comment --comment "istio/redirect-to-envoy-port"
+
+# Redirect all inbound traffic to Envoy.
+iptables -t nat -A PREROUTING -j ISTIO_REDIRECT                               -m comment --comment "istio/install-istio-prerouting"
+
+# Create a new chain for selectively redirecting outbound packets to
+# Envoy.
+iptables -t nat -N ISTIO_OUTPUT                                               -m comment --comment "istio/common-output-chain"
+
+...omitted for brevity
+```
+
 ## 参考
 
 * [Service Mesh with Istio and NGINX](https://github.com/nginmesh/nginmesh/)
