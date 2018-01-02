@@ -345,7 +345,7 @@ status:
 
 proxy_debug就是sidecar代理，proxy_init则用于配置iptable 规则，以将应用的流量导入到sidecar代理中。
 
-查看proxy_debug 的Dockerfile文件，可以看到其实是调用了[prepare_proxy.sh](https://github.com/nginmesh/nginmesh/blob/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent/docker-init/prepare_proxy.sh)这个脚本来创建iptable规则。
+查看proxy_init的Dockerfile文件，可以看到proxy_init其实是调用了[prepare_proxy.sh](https://github.com/nginmesh/nginmesh/blob/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent/docker-init/prepare_proxy.sh)这个脚本来创建iptable规则。
 
 proxy_debug Dockerfile
 
