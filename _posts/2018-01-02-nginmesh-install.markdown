@@ -101,7 +101,7 @@ kube-1    Ready     master    21m       v1.9.0
 kube-2    Ready     <none>    47s       v1.9.0
 ```
 
-##安装Istio控制面和Bookinfo
+## 安装Istio控制面和Bookinfo
 
 参考[Nginmesh文档](https://github.com/nginmesh/nginmesh)安装Istio控制面和Bookinfo
 该文档的步骤清晰明确，这里不再赘述。
