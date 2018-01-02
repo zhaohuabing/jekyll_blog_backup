@@ -1,6 +1,6 @@
 ---
 layout:     post 
-title:      "Nginx开源Service Mesh Nginmesh安装指南"
+title:      "Nginx开源Service Mesh组件Nginmesh安装指南"
 subtitle:   ""
 description: "采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。"
 date:       2018-01-02 12:00:00
@@ -22,7 +22,7 @@ tags:
 
 ## 前言
 
-Nginmesh是NGINX公的Service Mesh开源项目，用于Istio服务网格平台中的7层负载均衡和代理。它旨在提供关键功能并与Istio集成，作为边车（sidecar）容器部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
+Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
 
 ![Nginmesh sidecar proxy](https://raw.githubusercontent.com/nginmesh/nginmesh/master/images/nginx_sidecar.png)
 
@@ -30,7 +30,7 @@ Nginmesh是NGINX公的Service Mesh开源项目，用于Istio服务网格平台�
 
 ## 安装Kubernetes Cluster
 
-Kubernetes Cluster包含etcd, api server, scheduler，controller manager等多个组件，组件之间的配置较为复杂，如果要手动去逐个安装及配置各个组件，需要了解kubernetes，操作系统及网络等多方面的知识，对安装人员的要求较高。kubeadm提供了一个简便，快速安装Kubernetes Cluster的方式，并且可以通过安装配置文件提供较高的灵活性，因此我们采用kubeadm安装kubernetes cluster。
+Kubernetes Cluster包含etcd, api server, scheduler，controller manager等多个组件，组件之间的配置较为复杂，如果要手动去逐个安装及配置各个组件，需要了解kubernetes，操作系统及网络等多方面的知识，对安装人员的能力要求较高。kubeadm提供了一个简便，快速安装Kubernetes Cluster的方式，并且可以通过安装配置文件提供较高的灵活性，因此我们采用kubeadm安装kubernetes cluster。
 
 首先参照[kubeadm的说明文档](https://kubernetes.io/docs/setup/independent/install-kubeadm)在计划部署kubernetes cluster的每个节点上安装docker，kubeadm, kubelet 和 kubectl。
 
@@ -79,7 +79,7 @@ kubeadm会花一点时间拉取docker image，命令完成后，会提示如何�
  ```
 > 备注：目前kubeadm只能支持在一个节点上安装master，支持高可用的安装将在后续版本实现。kubernetes官方给出的workaround建议是定期备份 etcd 数据[kubeadm limitations](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#limitations)。
 
-安装一个Pod网络，这里我采用的是Calico
+Kubeadm并不会安装Pod需要的网络，因此需要手动安装一个Pod网络，这里采用的是Calico
 ```
 kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
 ```
@@ -106,7 +106,7 @@ kube-2    Ready     <none>    47s       v1.9.0
 参考[Nginmesh文档](https://github.com/nginmesh/nginmesh)安装Istio控制面和Bookinfo
 该文档的步骤清晰明确，这里不再赘述。
 
-需要注意的是，在Niginmesh文档中，建议通过Ingress的External IP访问bookinfo应用程序。但Loadbalancer只在云环境中才会生效，并且还需要进行一定的配置。如我在Openstack环境中创建的cluster，则需要参照[该文档](https://docs.openstack.org/magnum/ocata/dev/kubernetes-load-balancer.html)对Openstack进行配置，Openstack才能够支持kubernetes的Loadbalancer service。如未进行配置，通过命令查看Ingress External IP一直显示为pending状态。
+需要注意的是，在Niginmesh文档中，建议通过Ingress的External IP访问bookinfo应用程序。但[Loadbalancer只在支持的云环境中才会生效](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer)，并且还需要进行一定的配置。如我在Openstack环境中创建的cluster，则需要参照[该文档](https://docs.openstack.org/magnum/ocata/dev/kubernetes-load-balancer.html)对Openstack进行配置后，Openstack才能够支持kubernetes的Loadbalancer service。如未进行配置，通过命令查看Ingress External IP一直显示为pending状态。
 
 ```
 NAME            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                                                            AGE
@@ -115,12 +115,12 @@ istio-mixer     ClusterIP      10.107.135.31   <none>        9091/TCP,15004/TCP,
 istio-pilot     ClusterIP      10.111.110.65   <none>        15003/TCP,443/TCP                                                  11m
 ```
 
-如未能配置云环境提供Loadbalancer, 我们可以直接使用集群中的一个节点IP:Nodeport访问Bookinfo应用程序。
+如不能配置云环境提供Loadbalancer特性, 我们可以直接使用集群中的一个节点IP:Nodeport访问Bookinfo应用程序。
 
 ```
 http://10.12.5.31:32765/productpage
 ```
-如果想要了解更多关于如何从集群外部进行访问的内容，可以参考[如何从外部访问Kubernetes集群中的应用？](http://zhaohuabing.com/2017/11/28/access-application-from-outside/)
+想要了解更多关于如何从集群外部进行访问的内容，可以参考[如何从外部访问Kubernetes集群中的应用？](http://zhaohuabing.com/2017/11/28/access-application-from-outside/)
 
 ## 查看自动注入的sidecar
 使用 kubectl get pod reviews-v3-5fff595d9b-zsb2q -o yaml 命令查看Bookinfo应用的reviews服务的Pod。
@@ -375,6 +375,10 @@ iptables -t nat -N ISTIO_OUTPUT                                               -m
 
 ...omitted for brevity
 ```
+
+## 关联阅读
+
+[Istio及Bookinfo示例程序安装试用笔记](http://zhaohuabing.com/2017/11/04/istio-install_and_example/)
 
 ## 参考
 
