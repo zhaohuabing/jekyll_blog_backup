@@ -25,14 +25,12 @@ tags:
 
 ## 单体应用的实现方式
 在单体架构下，应用是一个整体，在应用中，一般会用一个安全模块来实现用户认证和鉴权。
-
-用户登录时，应用的安全模块对用户身份进行验证，验证用户身份合法后，为该用户生成一个会话(Session)，该Session关联了一个唯一的Session Id。Session是应用中的一小块内存结构，保存了登录用户的信息，如User name, Role, Permission等。该Session的Session Id被返回给客户端，客户端将此记录下来并随着请求发送到应用，这样应用在接收到客户端访问请求时可以使用Session Id验证用户身份，不用每次请求时都输入用户名和密码进行身份验证。
+用户登录时，应用的安全模块对用户身份进行验证，验证用户身份合法后，为该用户生成一个会话(Session)，该Session关联了一个唯一的Session Id。Session是应用中的一小块内存结构，保存了登录用户的信息，如User name, Role, Permission等。该Session的Session Id被返回给客户端，客户端将Session Id以cookie或者URL重写的方式记录下来，并在后续请求中发送给应用，这样应用在接收到客户端访问请求时可以使用Session Id验证用户身份，不用每次请求时都输入用户名和密码进行身份验证。
 > 备注：为了避免Session Id被第三者截取和盗用，Session设置有过期时间，客户端和应用之前的通讯也应使用HTTPS加密通信。
-
 ![单体应用用户登录认证序列图](\img\in-post\2018-02-03-authentication&authorization-of-microservice\monolith-user-login.png)
 <center>单体应用用户登录认证序列图</center>
 
-客户端将收到的Session Id保存在Cookie中，或者通过URL重写放到URL中。客户端访问应用时，Session Id随着HTTP请求发送到应用，客户端请求一般会通过一个拦截器处理所有收到的客户端请求。拦截器首先判断Session Id是否存在，如果该Session Id存在，就知道该用户已经登录。然后再通过用户的拥有的权限判断用户能否执行该此请求，以实现操作鉴权。
+客户端访问应用时，Session Id随着HTTP请求发送到应用，客户端请求一般会通过一个拦截器处理所有收到的客户端请求。拦截器首先判断Session Id是否存在，如果该Session Id存在，就知道该用户已经登录。然后再通过用户的拥有的权限判断用户能否执行该此请求，以实现操作鉴权。
 ![单体应用用户操作鉴权序列图](\img\in-post\2018-02-03-authentication&authorization-of-microservice\monolith-user-request.png)
 <center>单体应用用户操作鉴权序列图</center>
 
