@@ -1,0 +1,16 @@
+---
+layout:     post
+title:      "Vim Tips"
+subtitle:   ""
+description: "Vim tips and tricks"
+date:       2018-02-09 11:00:00
+author:     "赵化冰"
+header-img: "img/in-post/post-bg-unix-linux.jpg"
+published: true
+tags:
+    -Tips
+    -Vim
+---
+## vim graphical cheat sheet
+
+![](/img/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg)
