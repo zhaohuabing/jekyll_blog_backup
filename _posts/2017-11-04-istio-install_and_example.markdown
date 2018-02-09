@@ -79,6 +79,9 @@ Rancher Server: 10.12.25.60
 curl https://releases.rancher.com/install-docker/1.12.sh | sh
 ```
 
+如果需要以非root用户执行docker命令，参考[如何使用非root用户执行docker命令](http://zhaohuabing.com/2018/02/09/docker-without-sudo/)。
+
+
 ### 启动Rancher server
 
 ```
