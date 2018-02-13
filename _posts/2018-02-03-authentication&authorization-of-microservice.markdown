@@ -27,6 +27,7 @@ tags:
 在单体架构下，应用是一个整体，在应用中，一般会用一个安全模块来实现用户认证和鉴权。
 用户登录时，应用的安全模块对用户身份进行验证，验证用户身份合法后，为该用户生成一个会话(Session)，该Session关联了一个唯一的Session Id。Session是应用中的一小块内存结构，保存了登录用户的信息，如User name, Role, Permission等。该Session的Session Id被返回给客户端，客户端将Session Id以cookie或者URL重写的方式记录下来，并在后续请求中发送给应用，这样应用在接收到客户端访问请求时可以使用Session Id验证用户身份，不用每次请求时都输入用户名和密码进行身份验证。
 > 备注：为了避免Session Id被第三者截取和盗用，Session设置有过期时间，客户端和应用之前的通讯也应使用HTTPS加密通信。
+
 ![单体应用用户登录认证序列图](\img\in-post\2018-02-03-authentication&authorization-of-microservice\monolith-user-login.png)
 <center>单体应用用户登录认证序列图</center>
 
@@ -93,10 +94,17 @@ HMACSHA256(
 1. 客户端向服务器端发送访问请求，请求中携带之前颁发的Token
 1. 服务器端验证Token，确认用户的身份和对资源的访问权限，并进行相应的处理（拒绝或者允许访问）
 ![](https://cdn.auth0.com/content/jwt/jwt-diagram.png)
+<center>采用Token进行用户认证的流程图</center>
 
-###采用API Gateway和Token实现SSO
+### 采用API Gateway和Token实现SSO
 API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用提供一个较为完善的SSO方案。
+1. 客户端请求发送到API Gateway
+1. API Gateway调用的Security Service对请求中的Token进行验证，检查用户的身份
+2. 如果请求中没有Token，Token过期或者Token验证非法，则拒绝用户请求。
+3. Security Service检查用户是否具有该操作权
+4. 如果用户具有该操作权限，则把请求发送到后端的Business Service，否则拒绝用户请求
 ![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication&authorization-of-microservice\api-gateway-sso.png)
+<center>采用API Gateway和Token实现微服务应用SSO</center>
 
 
 ### 用户权限控制
