@@ -54,7 +54,7 @@ HTTP是一个无状态的协议，对服务器来说，用户的每次HTTP请求
 
 传统方式是在服务器端采用Cookie来保存用户状态，由于在服务器是有状态的，对服务器的水平扩展有影响。在微服务架构下建议采用Token来记录用户登录状态。
 Token和Seesion主要的不同点是存储的地方不同。Session是集中存储在服务器中的；而Token是用户自己持有的，一般以cookie的形式存储在浏览器中。Token中保存了用户的身份信息，每次请求都会发送给服务器，服务器因此可以判断访问者的身份，并判断其对请求的资源有没有访问权限。
-Token用于标明用户身份，因此需要对其内容进行加密，避免被请求方或者第三者篡改。[JWT(Json Web Token)](https://jwt.io)是一个定义Token格式的开放标准(RFC 7519),定义了Token的内容，加密方式，并提供了各种语言的lib。
+Token用于表明用户身份，因此需要对其内容进行加密，避免被请求方或者第三者篡改。[JWT(Json Web Token)](https://jwt.io)是一个定义Token格式的开放标准(RFC 7519),定义了Token的内容，加密方式，并提供了各种语言的lib。
 
 JWT Token的结构非常简单，包括三部分：
 * Header
@@ -75,7 +75,7 @@ JWT Token的结构非常简单，包括三部分：
 }
 ```
 * Signature
-Token颁发方的签名，用于客户端验证Token颁发方的身份，并防止Token被篡改。
+Token颁发方的签名，用于客户端验证Token颁发方的身份，也用于服务器防止Token被篡改。
 签名算法
 ```
 HMACSHA256(
@@ -87,6 +87,11 @@ HMACSHA256(
 这三部分使用Base64编码后组合在一起，成为最终返回给客户端的Token串，每部分之间采用"."分隔。下图是上面例子最终形成的Token
 ![](https://cdn.auth0.com/content/jwt/encoded-jwt3.png)
 
+采用Token进行用户认证，服务器端不再保存用户状态，客户端每次请求时都需要将Token发送到服务器端进行身份验证。Token发送的方式[rfc6750](https://tools.ietf.org/html/rfc6750)进行了规定，采用一个 Authorization: Bearer HHTP Header进行发送。
+```
+Authorization: Bearer mF_9.B5f-4.1JqM
+```
+
 采用Token方式进行用户认证的基本流程如下图所示：
 1. 用户输入用户名,密码等验证信息，向服务器发起登录请求
 1. 服务器端验证用户登录信息，生成JWT token
@@ -96,22 +101,37 @@ HMACSHA256(
 ![](https://cdn.auth0.com/content/jwt/jwt-diagram.png)
 <center>采用Token进行用户认证的流程图</center>
 
-### 采用API Gateway和Token实现SSO
+### 采用API Gateway和Token实现单点登录
 API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用提供一个较为完善的SSO方案。
+用户的认证流程和采用Token方式认证的基本流程类似，不同之处是加入了API Gateway作为外部请求的入口。
+用户登录
+1. 客户端发送登录请求到API Gateway
+2. API Gateway将登录请求转发到Security Service
+3. Security Service验证用户身份，并颁发Token
+
+用户请求
 1. 客户端请求发送到API Gateway
 1. API Gateway调用的Security Service对请求中的Token进行验证，检查用户的身份
 2. 如果请求中没有Token，Token过期或者Token验证非法，则拒绝用户请求。
 3. Security Service检查用户是否具有该操作权
 4. 如果用户具有该操作权限，则把请求发送到后端的Business Service，否则拒绝用户请求
 ![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication&authorization-of-microservice\api-gateway-sso.png)
-<center>采用API Gateway和Token实现微服务应用SSO</center>
-
+<center>采用API Gateway和Token实现微服务应用的单点登录</center>
 
 ### 用户权限控制
+用户权限控制有两种做法，在API Gateway处统一处理，或者在各个微服务中单独处理。
+* API Gateway处进行统一的权限控制
+客户端发送的HTTP请求中包含有请求的Resource及HTTP Method。如果系统遵循REST规范，以URI资源方式对访问对象进行建模，则API Gateway可以从请求中直接截取到访问的资源及需要进行的操作，然后调用Security Service进行权限判断，根据判断结果决定用户是否有权限对该资源进行操作，并转发到后端的Business Service。
+* 由各个微服务单独进行权限控制
+如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行定制化的权限控制，则需要在微服务中单独对用户权限进行判断和处理。
+
 
 ### 第三方应用接入
+应用接入： API Token
+以用户的身份接入： OAuth 2.0
 
 ### 微服务之间的认证
+双向SSL认证
 
 ## 参考
 

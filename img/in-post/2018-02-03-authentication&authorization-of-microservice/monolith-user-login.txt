@@ -8,7 +8,7 @@ end box
 
 "User" -> "Client(Browser)": Name and Passowrd
 "Client(Browser)" -> "Security Module": Login
-"Security Module" -> "Security Module": Validate user identity
+"Security Module" -> "Security Module": Verify user identity
 alt Credential is valid
     "Security Module" -> "Security Module": Generate session
     "Security Module" -> "Client(Browser)": Sessio Id (Cookie or URL rewriting)
