@@ -1,4 +1,5 @@
 @startuml
+actor User
 participant "Client(Browser)"
 box "Server"
 participant "Authorization Interceptor" 
@@ -6,6 +7,7 @@ participant "Security Module"
 participant "Business Module" 
 end box
 
+"User" -> "Client(Browser)": User request
 "Client(Browser)" -> "Authorization Interceptor": User request (Session Id, Requested Resource, Operation)
 "Authorization Interceptor"  -> "Authorization Interceptor" : Get session Id
 alt no session Id in the user request 

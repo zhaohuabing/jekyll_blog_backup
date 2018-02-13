@@ -84,7 +84,7 @@ HMACSHA256(
 ```
 
 这三部分使用Base64编码后组合在一起，成为最终返回给客户端的Token串，每部分之间采用"."分隔。下图是上面例子最终形成的Token
-![]((https://cdn.auth0.com/content/jwt/encoded-jwt3.png)
+![](https://cdn.auth0.com/content/jwt/encoded-jwt3.png)
 
 采用Token方式进行用户认证的基本流程如下图所示：
 1. 用户输入用户名,密码等验证信息，向服务器发起登录请求
@@ -92,10 +92,13 @@ HMACSHA256(
 1. 服务器端将Token返回给客户端，客户端保存在本地（一般以Cookie的方式保存）
 1. 客户端向服务器端发送访问请求，请求中携带之前颁发的Token
 1. 服务器端验证Token，确认用户的身份和对资源的访问权限，并进行相应的处理（拒绝或者允许访问）
-![]((https://cdn.auth0.com/content/jwt/jwt-diagram.png)
+![](https://cdn.auth0.com/content/jwt/jwt-diagram.png)
+
+###采用API Gateway和Token实现SSO
+API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用提供一个较为完善的SSO方案。
+![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication&authorization-of-microservice\api-gateway-sso.png)
 
 
-####
 ### 用户权限控制
 
 ### 第三方应用接入

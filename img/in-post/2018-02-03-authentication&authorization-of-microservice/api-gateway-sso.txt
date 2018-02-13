@@ -1,0 +1,29 @@
+@startuml
+actor User
+participant "Client(Browser)"
+box "Microservice Application"
+participant "API Gateway" 
+participant "Security Service" 
+collections "Business Service" 
+end box
+
+"User" -> "Client(Browser)": User request
+"Client(Browser)" -> "API Gateway": User request (Token, Requested Resource, Operation)
+"API Gateway"  -> "Security Service" : Verify token
+"Security Service"  -> "Security Service" : Check user identity
+alt no token, token is expired or invalid token
+    "Security Service"  -> "API Gateway" : Authentication failed
+    "API Gateway" -> "Client(Browser)" : Error: user doesn't login
+else Token is valid
+    "Security Service" -> "Security Service": Check user permission
+    alt user doesn't have the permission         
+        "Security Service" -> "API Gateway" : No permission
+        "API Gateway" -> "Client(Browser)": Request operation is not allowed
+    else user has the permission
+        "Security Service" -> "API Gateway": Request allowed
+        "API Gateway" -> "Business Service": Forward request 
+        "Business Service" -> "API Gateway": Operation result 
+        "API Gateway" -> "Client(Browser)": Operation result          
+    end
+end
+@enduml
