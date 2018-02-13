@@ -57,8 +57,7 @@ Token和Seesion主要的不同点是存储的地方不同。Session是集中存�
 Token用于表明用户身份，因此需要对其内容进行加密，避免被请求方或者第三者篡改。[JWT(Json Web Token)](https://jwt.io)是一个定义Token格式的开放标准(RFC 7519),定义了Token的内容，加密方式，并提供了各种语言的lib。
 
 JWT Token的结构非常简单，包括三部分：
-* Header
-
+* Header<BR>
 头部包含类型,为固定值JWT。然后是JWT使用的Hash算法。
 ```
 {
@@ -121,17 +120,15 @@ API Gateway提供了客户端访问微服务应用的入口，Token实现了无�
 
 ### 用户权限控制
 用户权限控制有两种做法，在API Gateway处统一处理，或者在各个微服务中单独处理。
-* API Gateway处进行统一的权限控制
-
+* API Gateway处进行统一的权限控制<BR>
 客户端发送的HTTP请求中包含有请求的Resource及HTTP Method。如果系统遵循REST规范，以URI资源方式对访问对象进行建模，则API Gateway可以从请求中直接截取到访问的资源及需要进行的操作，然后调用Security Service进行权限判断，根据判断结果决定用户是否有权限对该资源进行操作，并转发到后端的Business Service。
-* 由各个微服务单独进行权限控制
-
+* 由各个微服务单独进行权限控制<BR>
 如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行定制化的权限控制，则需要在微服务中单独对用户权限进行判断和处理。
 
 
 ### 第三方应用接入
-应用接入： API Token
-以用户的身份接入： OAuth 2.0
+* 应用接入： API Token
+* 以用户的身份接入： OAuth 2.0
 
 ### 微服务之间的认证
 双向SSL认证
