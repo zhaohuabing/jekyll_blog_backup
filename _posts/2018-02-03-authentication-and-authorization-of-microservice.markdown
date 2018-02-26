@@ -28,11 +28,11 @@ tags:
 用户登录时，应用的安全模块对用户身份进行验证，验证用户身份合法后，为该用户生成一个会话(Session)，该Session关联了一个唯一的Session Id。Session是应用中的一小块内存结构，保存了登录用户的信息，如User name, Role, Permission等。该Session的Session Id被返回给客户端，客户端将Session Id以cookie或者URL重写的方式记录下来，并在后续请求中发送给应用，这样应用在接收到客户端访问请求时可以使用Session Id验证用户身份，不用每次请求时都输入用户名和密码进行身份验证。
 > 备注：为了避免Session Id被第三者截取和盗用，Session设置有过期时间，客户端和应用之前的通讯也应使用HTTPS加密通信。
 
-![单体应用用户登录认证序列图](\img\in-post\2018-02-03-authentication&authorization-of-microservice\monolith-user-login.png)
+![单体应用用户登录认证序列图](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\monolith-user-login.png)
 <center>单体应用用户登录认证序列图</center>
 
 客户端访问应用时，Session Id随着HTTP请求发送到应用，客户端请求一般会通过一个拦截器处理所有收到的客户端请求。拦截器首先判断Session Id是否存在，如果该Session Id存在，就知道该用户已经登录。然后再通过用户的拥有的权限判断用户能否执行该此请求，以实现操作鉴权。
-![单体应用用户操作鉴权序列图](\img\in-post\2018-02-03-authentication&authorization-of-microservice\monolith-user-request.png)
+![单体应用用户操作鉴权序列图](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\monolith-user-request.png)
 <center>单体应用用户操作鉴权序列图</center>
 
 ## 微服务架构下认证和鉴权面临的问题
@@ -41,7 +41,7 @@ tags:
 * 微服务应遵循单一职责原理，一个微服务只处理单一的业务逻辑。认证和鉴权的公共逻辑不应该放到微服务实现中。 
 * 为了充分利用微服务架构的好处，实现微服务的水平扩展(Scalability)和弹性(Resiliency),微服务最好是无状态的。因此不建议使用session这种有状态的方案。
 * 微服务架构下的认证和鉴权涉及到场景更为复杂，涉及到用户访问微服务应用，第三方应用访问微服务应用，应用内多个微服务之间相互访问等多种场景，每种场景下的认证和鉴权方案都需要考虑到，以保证应用程序的安全性。
-![微服务认证和鉴权涉及到的三种场景](\img\in-post\2018-02-03-authentication&authorization-of-microservice\auth-scenarios.png)
+![微服务认证和鉴权涉及到的三种场景](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\auth-scenarios.png)
 <center>微服务认证和鉴权涉及到的三种场景</center>
 
 ## 微服务架构下认证和鉴权的技术方案
@@ -86,12 +86,10 @@ HMACSHA256(
 
 这三部分使用Base64编码后组合在一起，成为最终返回给客户端的Token串，每部分之间采用"."分隔。下图是上面例子最终形成的Token
 ![](https://cdn.auth0.com/content/jwt/encoded-jwt3.png)
-
 采用Token进行用户认证，服务器端不再保存用户状态，客户端每次请求时都需要将Token发送到服务器端进行身份验证。Token发送的方式[rfc6750](https://tools.ietf.org/html/rfc6750)进行了规定，采用一个 Authorization: Bearer HHTP Header进行发送。
 ```
 Authorization: Bearer mF_9.B5f-4.1JqM
 ```
-
 采用Token方式进行用户认证的基本流程如下图所示：
 1. 用户输入用户名,密码等验证信息，向服务器发起登录请求
 1. 服务器端验证用户登录信息，生成JWT token
@@ -115,7 +113,7 @@ API Gateway提供了客户端访问微服务应用的入口，Token实现了无�
 2. 如果请求中没有Token，Token过期或者Token验证非法，则拒绝用户请求。
 3. Security Service检查用户是否具有该操作权
 4. 如果用户具有该操作权限，则把请求发送到后端的Business Service，否则拒绝用户请求
-![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication&authorization-of-microservice\api-gateway-sso.png)
+![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\api-gateway-sso.png)
 <center>采用API Gateway和Token实现微服务应用的单点登录</center>
 
 ### 用户权限控制
@@ -125,13 +123,18 @@ API Gateway提供了客户端访问微服务应用的入口，Token实现了无�
 * 由各个微服务单独进行权限控制<BR>
 如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行定制化的权限控制，则需要在微服务中单独对用户权限进行判断和处理。
 
-
 ### 第三方应用接入
-* 应用接入： API Token
-* 以用户的身份接入： OAuth 2.0
+对于第三方应用接入的访问控制，有两种实现方式：
+* API Token<BR>
+第三方应用使用一个颁发的API Token对应用的数据进行访问，在这种情况下，一般只允许第三方应用访问一些公共数据和该Token所属用户自身的数据，而不能访问其他用户的敏感私有数据。
+
+* OAuth<BR>
+采用标准的OAuth流程对第三方应用进行授权和访问控制。当第三方应用访问服务时，提示用户授权第三方应用相应的访问权限，根据用户的授权操作结果对第三方应用的操作请求进行访问控制。
+
+>  备注：微服务自身的用户认证也可以采用OAuth方案将认证过程委托给一个第三方的认证服务。例如很多应用都采用微信或者QQ账号登录。这里的第三方应用接入和微服务自身用户认证采用OAuth的目的是不同的，前者是为了授权用户自身的私有数据访问权限给第三方应用，而后者的目的是利用知名的认证提供服务商提供的认证服务，降低新用户注册的操作难度。
 
 ### 微服务之间的认证
-双向SSL认证
+由于同一个应用的微服务是部署在同一个局域网中，位于外部防火墙之内，在PaaS/IaaS环境下也会进行租户隔离，因此同一个应用中不同微服务之间的访问不需要考虑操作鉴权，采用双向SSL进行认证即可，同时采用SSL对微服务之间的通讯进行加密。
 
 ## 参考
 
