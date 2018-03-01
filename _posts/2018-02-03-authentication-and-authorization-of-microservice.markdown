@@ -146,7 +146,7 @@ curl -u zhaohuabing:fbdf8e8862252ed0f3ba9dba4e328c01ac93aeec https://api.github.
 #### OAuth
 某些第三方应用需要访问不同用户的数据，或者对多个用户的数据进行整合处理，则可以考虑采用OAuth。采用OAuth，当第三方应用访问服务时，应用会提示用户授权第三方应用相应的访问权限，根据用户的授权操作结果生成用于访问的Token，以对第三方应用的操作请求进行访问控制。
 
-以Github为例，Github也支持OAuth，一些第三方应用如Travis CI或者GitBook就是通过OAuth和Github进行集成的。
+同样以Github为例，一些第三方应用如Travis CI或者GitBook就是通过OAuth和Github进行集成的。
 一个典型的OAuth认证流程如下图所示：
 * 用户向OAuth客户端程序发起一个请求，OAuth客户端程序在处理该请求时发现需要访问用户在资源服务器中的数据。
 * 客户端程序将用户请求重定向到认证服务器，该请求中包含一个callback的URL。
