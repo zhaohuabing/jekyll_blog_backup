@@ -163,7 +163,6 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
 >```
 >POST /oauth/token HTTP/1.1
 >Host: authorization-server.com
->  			
 >grant_type=authorization_code
 >&code=xxxxxxxxxxx
 >&redirect_uri=https://example-app.com/redirect
@@ -172,7 +171,7 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
 >```
 
 
-![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow.png)
+![OAuth认证流程](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow.png)
 <center>OAuth认证流程</center>
 
 
