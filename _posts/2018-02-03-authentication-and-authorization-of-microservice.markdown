@@ -146,8 +146,8 @@ curl -u zhaohuabing:fbdf8e8862252ed0f3ba9dba4e328c01ac93aeec https://api.github.
 #### OAuth
 某些第三方应用需要访问不同用户的数据，或者对多个用户的数据进行整合处理，则可以考虑采用OAuth。采用OAuth，当第三方应用访问服务时，应用会提示用户授权第三方应用相应的访问权限，根据用户的授权操作结果生成用于访问的Token，以对第三方应用的操作请求进行访问控制。
 
-同样以Github为例，一些第三方应用如Travis CI或者GitBook就是通过OAuth和Github进行集成的。
-一个典型的OAuth认证流程如下图所示：
+同样以Github为例，一些第三方应用如Travis CI，GitBook等就是通过OAuth和Github进行集成的。
+OAuth针对不同场景有不同的认证流程，一个典型的认证流程如下图所示：
 * 用户向OAuth客户端程序发起一个请求，OAuth客户端程序在处理该请求时发现需要访问用户在资源服务器中的数据。
 * 客户端程序将用户请求重定向到认证服务器，该请求中包含一个callback的URL。
 * 认证服务器返回授权页面，要求用户对OAuth客户端的资源请求进行授权。
@@ -156,11 +156,18 @@ curl -u zhaohuabing:fbdf8e8862252ed0f3ba9dba4e328c01ac93aeec https://api.github.
 * 认证服务器验证授权码后将token颁发给客户端程序。
 * 客户端程序采用颁发的token访问资源，完成用户请求。
 
+>备注：
+>1. OAuth中按照功能区分了资源服务器和认证服务器这两个角色，在实现时这两个角色常常是同一个应用。将该流程图中的各个角色对应到Github的例子中，资源服务器和认证服务器都是Github，客户端程序是Travis CI或者GitBook，用户则是使用Travis CI或者GitBook的直接用户。
+>
+>2. 有人可能会疑惑在该流程中为何要使用一个授权码(Authorization Code)来申请Token，而不是由认证服务器直接返回Token给客户端。OAuth这样设计的原因是在重定向到客户端Callback URL的过程中会经过用户代理（浏览器），如果直接传递Token存在被窃取的风险。采用授权码的方式，申请Token时客户端直接和认证服务器进行交互，并且认证服务期在处理客户端的Token申请请求时还会对客户端进行身份认证，避免其他人伪造客户端身份来使用认证码申请Token。
+
 ![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow)
 <center>OAuth认证流程</center>
 
 
->  请注意：也可以采用OAuth将微服务的用户认证委托给一个第三方的认证服务提供商，例如很多应用都将用户登录和微信或者QQ的OAuth服务进行了集成。
+>  请注意：微服务作为OAuth客户端和OAuth服务器的两种不同场景。
+>  
+>  在实现微服务自身的用户认证时，也可以采用OAuth将微服务的用户认证委托给一个第三方的认证服务提供商，例如很多应用都将用户登录和微信或者QQ的OAuth服务进行了集成。
 >  
 >  第三方应用接入和微服务自身用户认证采用OAuth的目的是不同的，前者是为了将微服务中用户的私有数据访问权限授权给第三方应用，微服务在OAuth架构中是认证和资源服务器的角色；而后者的目的是集成并利用知名认证提供服务商提供的OAuth认证服务，简化繁琐的注册操作，微服务在OAuth架构中是客户端的角色。
 >  
