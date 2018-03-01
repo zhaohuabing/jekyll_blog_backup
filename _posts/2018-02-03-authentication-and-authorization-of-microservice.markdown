@@ -5,7 +5,7 @@ subtitle:   "微服务架构下的认证和鉴权方案探讨"
 description: "微服务架构下的认证和鉴权方案探讨。"
 date:       2018-02-03 12:00:00
 author:     "赵化冰"
-header-img: "img/in-post/2018-02-03-authentication&authorization-of-microservice/AuthenticationTrack.jpeg"
+header-img: "img/in-post/2018-02-03-authentication-and-authorization-of-microservice/AuthenticationTrack.jpeg"
 published: true
 tags:
     - Microservice
