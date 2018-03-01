@@ -161,7 +161,7 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
 >
 >2. 有人可能会疑惑在该流程中为何要使用一个授权码(Authorization Code)来申请Token，而不是由认证服务器直接返回Token给客户端。OAuth这样设计的原因是在重定向到客户端Callback URL的过程中会经过用户代理（浏览器），如果直接传递Token存在被窃取的风险。采用授权码的方式，申请Token时客户端直接和认证服务器进行交互，并且认证服务期在处理客户端的Token申请请求时还会对客户端进行身份认证，避免其他人伪造客户端身份来使用认证码申请Token。
 
-![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow)
+![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow.png)
 <center>OAuth认证流程</center>
 
 
