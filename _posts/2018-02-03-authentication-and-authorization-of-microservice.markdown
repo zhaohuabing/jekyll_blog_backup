@@ -1,8 +1,8 @@
 ---
 layout:     post 
-title:      "微服务架构下的认证和鉴权实现方案"
+title:      "微服务架构下的认证和鉴权实现方案探讨"
 subtitle:   ""
-description: "微服务架构下的认证和鉴权实现方案。"
+description: "微服务架构下的认证和鉴权实现方案探讨。"
 date:       2018-02-03 12:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-02-03-authentication&authorization-of-microservice/AuthenticationTrack.jpeg"
@@ -35,7 +35,7 @@ tags:
 ![单体应用用户操作鉴权序列图](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\monolith-user-request.png)
 <center>单体应用用户操作鉴权序列图</center>
 
-## 微服务架构下认证和鉴权面临的问题
+## 微服务认证和鉴权面临的问题
 在微服务架构下，一个应用被拆分为多个微服务进程，每个微服务实现原来单体应用中一个模块的业务功能。应用拆分后，对每个微服务的访问请求都需要进行认证和鉴权。如果参考单体应用的实现方式会遇到下述问题：
 * 认证和鉴权逻辑需要在每个微服务中进行处理，需要在各个微服务中重复实现这部分公共逻辑。虽然我们可以使用代码库复用部分代码，但这又会导致所有微服务对特定代码库及其版本存在依赖，影响微服务语言/框架选择的灵活性。
 * 微服务应遵循单一职责原理，一个微服务只处理单一的业务逻辑。认证和鉴权的公共逻辑不应该放到微服务实现中。 
@@ -44,7 +44,7 @@ tags:
 ![微服务认证和鉴权涉及到的三种场景](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\auth-scenarios.png)
 <center>微服务认证和鉴权涉及到的三种场景</center>
 
-## 微服务架构下认证和鉴权的技术方案
+## 微服务认证和鉴权的技术方案
 
 ### 用户身份认证
 一个完整的微服务应用是由多个相互独立的微服务进程组成的，对每个微服务的访问都需要进行用户认证。如果将用户认证的工作放到每个微服务中，应用的认证逻辑将会非常复杂。因此需要考虑一个SSO（单点登录）的方案，即用户只需要登录一次，就可以访问所有微服务提供的服务。 由于在微服务架构中以API Gateway作为对外提供服务的入口，因此可以考虑在API Gateway处提供统一的用户认证。
@@ -101,8 +101,8 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 ![](https://cdn.auth0.com/content/jwt/jwt-diagram.png)
 <center>采用Token进行用户认证的流程图</center>
 
-### 采用API Gateway和Token实现单点登录
-API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用提供一个较为完善的SSO方案。
+### 实现单点登录
+单点登录的理念很简单，即用户只需要登录应用一次，就可以访问应用中所有的微服务。API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用实现一个单点登录方案。
 
 用户的认证流程和采用Token方式认证的基本流程类似，不同之处是加入了API Gateway作为外部请求的入口。
 
@@ -184,7 +184,7 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
   
 第三方应用接入和微服务自身用户认证采用OAuth的目的是不同的，前者是为了将微服务中用户的私有数据访问权限授权给第三方应用，微服务在OAuth架构中是认证和资源服务器的角色；而后者的目的是集成并利用知名认证提供服务商提供的OAuth认证服务，简化繁琐的注册操作，微服务在OAuth架构中是客户端的角色。
   
-因此在我们谈论OAuth时，需要区分这两种不同的场景，以免造成误解。
+因此在我们需要区分这两种不同的场景，以免造成误解。
 
 ### 微服务之间的认证
 除了来自用户和第三方的北向流量外，微服务之间还有大量的东西向流量，这些流量可能在同一个局域网中，也可能跨越不同的数据中心,这些服务间的流量存在被第三方的嗅探和攻击的危险，因此也需要进行安全控制。
@@ -196,6 +196,7 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
 
 * [How We Solved Authentication and Authorization in Our Microservice Architecture](https://initiate.andela.com/how-we-solved-authentication-and-authorization-in-our-microservice-architecture-994539d1b6e6)
 * [How to build your own public key infrastructure](https://blog.cloudflare.com/how-to-build-your-own-public-key-infrastructure/)
+* [OAuth 2.0 Authorization Code Request](https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/)
 * [PKI/CA工作原理及架构](https://www.jianshu.com/p/c65fa3af1c01)
 * [深入聊聊微服务架构的身份认证问题](http://www.primeton.com/read.php?id=2390)
 
