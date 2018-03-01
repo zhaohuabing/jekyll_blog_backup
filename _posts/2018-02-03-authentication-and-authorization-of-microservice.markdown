@@ -160,12 +160,23 @@ OAuth针对不同场景有不同的认证流程，一个典型的认证流程如
 >1. OAuth中按照功能区分了资源服务器和认证服务器这两个角色，在实现时这两个角色常常是同一个应用。将该流程图中的各个角色对应到Github的例子中，资源服务器和认证服务器都是Github，客户端程序是Travis CI或者GitBook，用户则是使用Travis CI或者GitBook的直接用户。
 >
 >2. 有人可能会疑惑在该流程中为何要使用一个授权码(Authorization Code)来申请Token，而不是由认证服务器直接返回Token给客户端。OAuth这样设计的原因是在重定向到客户端Callback URL的过程中会经过用户代理（浏览器），如果直接传递Token存在被窃取的风险。采用授权码的方式，申请Token时客户端直接和认证服务器进行交互，并且认证服务期在处理客户端的Token申请请求时还会对客户端进行身份认证，避免其他人伪造客户端身份来使用认证码申请Token。
+>```
+>POST /oauth/token HTTP/1.1
+>Host: authorization-server.com
+>  			
+>grant_type=authorization_code
+>&code=xxxxxxxxxxx
+>&redirect_uri=https://example-app.com/redirect
+>&client_id=xxxxxxxxxx
+>&client_secret=xxxxxxxxxx
+>```
+
 
 ![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\oauth_web_server_flow.png)
 <center>OAuth认证流程</center>
 
 
->  请注意：微服务作为OAuth客户端和OAuth服务器的两种不同场景。
+>  请注意微服务应用作为OAuth客户端和OAuth服务器的两种不同场景:
 >  
 >  在实现微服务自身的用户认证时，也可以采用OAuth将微服务的用户认证委托给一个第三方的认证服务提供商，例如很多应用都将用户登录和微信或者QQ的OAuth服务进行了集成。
 >  
