@@ -1,7 +1,7 @@
 ---
 layout:     post 
-title:      "微服务架构下的认证和鉴权实现方案探讨"
-subtitle:   ""
+title:      "如何实现安全的微服务应用？"
+subtitle:   "微服务架构下的认证和鉴权实现方案探讨"
 description: "微服务架构下的认证和鉴权实现方案探讨。"
 date:       2018-02-03 12:00:00
 author:     "赵化冰"
