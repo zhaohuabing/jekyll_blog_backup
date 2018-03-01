@@ -1,8 +1,8 @@
 ---
 layout:     post 
-title:      "如何实现安全的微服务应用？"
-subtitle:   "微服务架构下的认证和鉴权实现方案探讨"
-description: "微服务架构下的认证和鉴权实现方案探讨。"
+title:      "如何构建安全的微服务应用？"
+subtitle:   "微服务架构下的认证和鉴权方案探讨"
+description: "微服务架构下的认证和鉴权方案探讨。"
 date:       2018-02-03 12:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-02-03-authentication&authorization-of-microservice/AuthenticationTrack.jpeg"
