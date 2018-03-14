@@ -17,7 +17,7 @@ sudo mkdir -p /etc/systemd/system/docker.service.d
 
 echo '
 [Service]
-Environment="HTTP_PROXY=http://proxyhk.zte.com.cn:80/"
+Environment="HTTP_PROXY=http://proxy.foo.bar.com:80/"
 ' | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 ```
 
