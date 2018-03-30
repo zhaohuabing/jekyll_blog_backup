@@ -109,18 +109,16 @@ Mixer主要提供了三个核心功能：
 这些功能是基于一组属性进行应用的，在Istio中，Sidecar会从每一次请求中收集请求的相关属性，如请求的路径，时间，源IP，目地服务等，并请这些属性上报给Mixer。
 #### Auth
 Istio支持双向SSL认证（Mutual SSL Authentication）和基于角色的访问控制（RBAC），以提供端到端的安全解决方案。
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\auth.png)
 ##### 认证
 Istio提供了一个内部的CA(证书机构),通过该内部CA为每个服务颁发证书，提供服务间访问的双向SSL身份认证，并进行通信加密，其整体架构如下图所示：
-![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\auth.png)
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\authorization.png)
 
 部署时：
 
 * CA监听Kubernetes API Server, 为每一个集群中的每一个Service Account创建一对密钥和证书，并发送给Kubernetes API Server。注意这里不是为每个服务生成一个证书，而是为每个Service Account生成一个证书。Service Account和kubernetes中部署的服务可以是一对多的关系。Service Account被保存在证书的SAN(Subject Alternative Name)字段中。
-
 * 当Pod创建时，Kubernetes根据该Pod关联的Service Account将密钥和证书以Kubernetes Secrets资源的方式加载为Pod的Volume，以供Envoy使用。
-
 * Pilot生成数据面的配置，包括Envoy需使用的密钥和证书信息，以及哪个Service Account可以允许运行哪些服务，下发到Envoy。
-
 >备注：如果是虚机环境，则采用一个Node Agent生成密钥，向Istio CA申请证书，然后将证书传递给Envoy。
 
 运行时：
