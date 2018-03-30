@@ -75,7 +75,7 @@ Istio是一个Service Mesh开源项目，是Google继Kubernetes之后的又一�
 由下图可见，Istio补充了Kubernetes生态圈的重要一环，是Google的微服务版图里一个里程碑式的扩张。
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\k8s-ecosystem.PNG)
 
-Google借Istio的力量推动微服务治理的事实标准，对Google自身的产品Google Cloud有极其重大的意义。其他的云服务厂商，如Redhat，Pivotal，Nginx，Buoyant等看到大势所趋，也纷纷跟进，宣布自身产品和Istio进行集成，以寻找其中的市场机会。
+Google借Istio的力量推动微服务治理的事实标准，对Google自身的产品Google Cloud有极其重大的意义。其他的云服务厂商，如Redhat，Pivotal，Nginx，Buoyant等看到大势所趋，也纷纷跟进，宣布自身产品和Istio进行集成，以避免自己被落下，丢失其中的市场机会。
 
 可以预见不久的将来，对于云原生应用而言，采用kubernetes进行服务部署和集群管理，采用Istio处理服务通讯和治理，将成为微服务应用的标准配置。
 
@@ -164,7 +164,7 @@ Istio数据面支持的特性如下：
 |Request Tracing（分布式追踪）|Request Tracing（分布式追踪）|
 |Fault Injection（故障注入）|Fault Injection（故障注入）|
 
->备注：Outbound特性是指服务请求侧的Sidecar提供的功能特性，而Inbound特性是指服务提供侧Sidecar提供的功能特性。
+>备注：Outbound特性是指服务请求侧的Sidecar提供的功能特性，而Inbound特性是指服务提供侧Sidecar提供的功能特性。一些特性如遥测和分布式跟踪需要两侧的Sidecar都提供支持；而另一些特性则只需要在一侧提供，例如鉴权只需要在服务提供侧提供，重试只需要在请求侧提供。
 
 #### 典型应用场景
 Istio服务管控包括下列的典型应用场景：
@@ -199,7 +199,7 @@ Istio通过高度的抽象和良好的设计采用一致的方式解决了该问
 测试稳定后，使用路由规则将生产流量逐渐导入到新版本系统中，如按5%，10%，50%，80%逐渐导入。
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\canary-2.png)
 
-最后将所有流量导入到新版本服务中，并将老版本服务下线。
+如果新版本工作正常，则最后将所有流量导入到新版本服务中，并将老版本服务下线；如中间出现问题，则可以将流量重新导回老版本，在新版本中修复故障后采用该流程重新发布。
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\canary-3.png)
 
 ##### 断路器
