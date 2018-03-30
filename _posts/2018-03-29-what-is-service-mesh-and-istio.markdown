@@ -1,6 +1,6 @@
 ---
 layout:     post 
-title:      "微服务应用的基础设施层"
+title:      "谈谈微服务应用的基础设施"
 subtitle:   "Service Mesh模式及Istio开源项目介绍"
 description: "微服务应用的基础设施层：Service Mesh模式和Istio开源项目介绍。"
 date:       2018-03-29 12:00:00
