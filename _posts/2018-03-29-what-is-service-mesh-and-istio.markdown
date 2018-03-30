@@ -66,15 +66,54 @@ _William Morgan _[_WHAT’S A SERVICE MESH? AND WHY DO I NEED ONE?_](https://buo
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\controlplane.png)
 
 ## Istio服务网格
+Istio是一个Service Mesh开源项目，是Google继Kubernetes之后的又一力作，主要参与的公司包括Google，IBM。
 
+Istio架构先进，功能强大，同时具有很好的扩展性，刚一宣布开源就获得了Linkerd，nginmesh等其他Service Mesh开源项目的合作支持，以及Red hat/Pivotal/F5/Weaveworks/Tigera/Datawire等公司的积极响应，建立了良好的生态圈。
 
+kubernetes是一个非常成功的开源项目，Google正在围绕kubernetes打造一个强大的生态圈。Kubernetes用于微服务的编排（编排是英文Orchestration的直译，用大白话说就是描述一组微服务之间的关联关系，并负责微服务的部署、终止、升级、缩扩容等）。Kubernetes向下用CNI，CRI标准接口可以对接不同的网络和容器运行时实现，提供微服务运行的基础设施。而Istio则补充了这个版图中缺失的一块，微服务的通讯和治理，是Kubernetes生态圈的有力补充。
+
+可以预见不久的将来，对于云原生应用而言，采用kubernetes进行服务部署和集群管理，采用Istio处理服务通讯和治理，将成为微服务应用的标准配置。
+
+Istio服务网格逻辑上分为数据面板和控制面板。
+* 数据面板由一组智能代理（Envoy）组成，代理部署为边车，调解和控制微服务之间所有的网络通信。
+* 控制面板负责管理和配置代理来路由流量，以及在运行时执行策略。
+
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\istio-architecture.png)
+
+### Istio控制面
+Istio控制面板包括3个组件:Pilot, Mixer和Istio-Auth。
+#### Pilot
+Pilot维护了网格中的服务的标准模型，这个标准模型是独立于底层平台的。Pilot中的平台特定适配器负责适当填充此标准模型。
+例如Pilot中的Kubernetes适配器通过Kubernetes API服务器得到kubernetes中pod注册信息的更改，入口资源以及存储流量管理规则等信息，然后将该数据被翻译为标准模型提供给Pilot使用。通过适配器模式，Pilot还可以从Mesos, Cloud Foundry, Consul中获取服务信息，也可以开发适配器将其他提供服务发现的组件集成到Pilot中。
+
+Pilot定义了一套用于服务发现 、负载均衡池和路由表的动态更新的标准 API，以该标准API和数据面进行通信，这些API将Envoy从平台特有的细微差别中解脱出来，简化了设计并提升了跨平台的可移植性。
+Pilot还提供了用户友好的高级路由规则，运维人员可以定义流量规则并下发到Pilot，这些规则被Pilot翻译成数据面的配置，通过标准API分发到Envoy实例。
+
+由于Pilot和Sidecar之间采用标准API进行通信，可以基于该标准API实现Sidecar通信代理，除Istio目前集成的Envoy外，还可以和Linkerd, Nginmesh等第三方通信代理进行集成，也可以基于该API自己编写Sidecar实现。
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\pilot.png)
+
+#### Mixer
+在微服务应用中，通常需要部署一些基础的后端公共服务以用于支撑业务功能。这些基础设施包括策略类如访问控制，配额管理；以及遥测报告如APM，日志等。微服务应用和这些后端支撑系统之间一般是直接集成的，这导致了应用和基础设置之间的紧密耦合。
+
+Mixer为应用程序代码和基础架构后端之间引入了一个通用中间层。该中间层解耦了应用和后端基础设施，应用程序代码不再将应用程序代码与特定后端集成在一起，而是与Mixer进行相当简单的集成，然后Mixer负责与后端系统连接。
+
+可以通过Mixer适配器接入不同的后端服务，而不需要修改应用的代码，例如通过不同的Mixer适配器，可以把Metrics收集到Prometheus或者InfluxDB，甚至可以在不停止应用服务的情况下动态切换后台服务。
+除了将基础设施服务和应用解耦外，Mixer还将策略决策移出应用层，使运维人员可以在运行期对策略进行配置，动态控制应用的行为，极大地提高了策略控制的灵活性。例如运维人员可以配置将哪些数据发送给哪个后端服务，用哪个后端服务进行认证，等等。
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mixer.png)
+
+Mixer主要提供了三个核心功能：
+* 前提条件检查。允许服务在响应来自服务消费者的传入请求之前验证一些前提条件。前提条件可以包括服务使用者是否被正确认证，是否在服务的白名单上，是否通过ACL检查等等。
+配额管理。 使服务能够在分配和释放多个维度上的配额，配额这一简单的资源管理工具可以在服务消费者对有限资源发生争用时，提供相对公平的（竞争手段）。Rate Limiting就是配额的一个例子。
+* 遥测报告。使服务能够上报日志和监控。在未来，它还将启用针对服务运营商以及服务消费者的跟踪和计费流。
+
+这些功能是基于一组属性进行应用的，在Istio中，Sidecar会从每一次请求中收集请求的相关属性，如请求的路径，时间，源IP，目地服务等，并请这些属性上报给Mixer。
 
 ## 参考
 
 * [How We Solved Authentication and Authorization in Our Microservice Architecture](https://initiate.andela.com/how-we-solved-authentication-and-authorization-in-our-microservice-architecture-994539d1b6e6)
 * [How to build your own public key infrastructure](https://blog.cloudflare.com/how-to-build-your-own-public-key-infrastructure/)
 * [OAuth 2.0 Authorization Code Request](https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/)
-* [PKI/CA工作原理及架构](https://www.jianshu.com/p/c65fa3af1c01)
+* 	[PKI/CA工作原理及架构](https://www.jianshu.com/p/c65fa3af1c01)
 * [深入聊聊微服务架构的身份认证问题](http://www.primeton.com/read.php?id=2390)
 
 
