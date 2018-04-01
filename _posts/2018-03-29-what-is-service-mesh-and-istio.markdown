@@ -115,7 +115,7 @@ Mixer主要提供了三个核心功能：
 
 
 Mixer的架构如图所示:
-![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mixer.png)
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mixer2.png)
 
 首先，Sidecar会从每一次请求中收集相关信息，如请求的路径，时间，源IP，目地服务，tracing头，日志等，并请这些属性上报给Mixer。Mixer和后端服务之间是通过适配器进行连接的，Mixer将Sidecar上报的内容通过适配器发送给后端服务。
 
