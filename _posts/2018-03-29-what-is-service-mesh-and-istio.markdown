@@ -128,10 +128,10 @@ Mixer的架构如图所示:
 
 #### Auth
 Istio支持双向SSL认证（Mutual SSL Authentication）和基于角色的访问控制（RBAC），以提供端到端的安全解决方案。
-![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\auth.png)
+
 ##### 认证
 Istio提供了一个内部的CA(证书机构),该CA为每个服务颁发证书，提供服务间访问的双向SSL身份认证，并进行通信加密，其整体架构如下图所示：
-![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\authorization.png)
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\auth.png)
 
 其工作机制如下：
 部署时：
