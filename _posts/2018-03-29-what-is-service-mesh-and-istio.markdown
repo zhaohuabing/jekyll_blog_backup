@@ -1,8 +1,8 @@
 ---
 layout:     post 
-title:      "谈谈微服务架构中的基础设施：Service Mesh与Istio"
-subtitle:   "Service Mesh模式及Istio开源项目介绍"
-description: "微服务应用的基础设施层：Service Mesh模式和Istio开源项目介绍。"
+title:      "谈谈微服务架构的基础设施：Service Mesh与Istio"
+subtitle:   ""
+description: "谈谈微服务架构的基础设施：Service Mesh与Istio"
 date:       2018-03-29 12:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
