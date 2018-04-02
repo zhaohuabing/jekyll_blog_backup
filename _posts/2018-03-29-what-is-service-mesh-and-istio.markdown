@@ -62,11 +62,15 @@ tags:
 当服务大量部署时，随着服务部署的sidecar代理之间的连接形成了一个如下图所示的网格，该网格成为了微服务的通讯基础设施层，承载了微服务之间的所有流量，被称之为Service Mesh（服务网格）。
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mesh.png)
 
-_服务网格是一个基础设施层，用于处理服务间通信。云原生应用有着复杂的服务拓扑，服务网格保证请求可以在这些拓扑中可靠地穿梭。在实际应用当中，服务网格通常是由一系列轻量级的网络代理组成的，它们与应用程序部署在一起，但应用程序不需要知道它们的存在。_
+_服务网格是一个基础设施层，用于处理服务间通信。云原生应用有着复杂的服务拓扑，服务网格保证请求可以在这些拓扑中可靠地穿梭。在实际应用当中，服务网格通常是由一系列轻量级的网络代理组成的，它们与应用程序部署在一起，但应用程序不需要知道它们的存在。
 
-_William Morgan _[_WHAT’S A SERVICE MESH? AND WHY DO I NEED ONE?_](https://buoyant.io/2017/04/25/whats-a-service-mesh-and-why-do-i-need-one/)_
+_William Morgan _[_WHAT’S A SERVICE MESH? AND WHY DO I NEED ONE?_
+](https://buoyant.io/2017/04/25/whats-a-service-mesh-and-why-do-i-need-one/)_
+
 服务网格中有数量众多的Sidecar代理，如果对每个代理分别进行设置，工作量将非常巨大。为了更方便地对服务网格中的代理进行统一集中控制，在服务网格上增加了控制面组件。
+
 ![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\controlplane.png)
+
 这里我们可以类比SDN的概念，控制面就类似于SDN网管中的控制器，负责路由策略的指定和路由规则下发；数据面类似于SDN网络中交换机，负责数据包的转发。
 
 由于微服务的所有通讯都由服务网格基础设施层提供，通过控制面板和数据面板的配合，可以对这些通讯进行监控、托管和控制，以实现微服务灰度发布，调用分布式追踪，故障注入模拟测试，动态路由规则，微服务闭环控制等管控功能。
