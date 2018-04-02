@@ -1,8 +1,8 @@
 ---
 layout:     post 
-title:      "谈谈微服务架构的基础设施：Service Mesh与Istio"
-subtitle:   ""
-description: "谈谈微服务架构的基础设施：Service Mesh与Istio"
+title:      "谈谈微服务架构中的基础设施：Service Mesh与Istio"
+subtitle:   "Service Mesh模式及Istio开源项目介绍"
+description: "微服务应用的基础设施层：Service Mesh模式和Istio开源项目介绍。"
 date:       2018-03-29 12:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
@@ -115,7 +115,7 @@ Mixer主要提供了三个核心功能：
 
 
 Mixer的架构如图所示:
-![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mixer2.png)
+![](\img\in-post\2018-03-29-what-is-service-mesh-and-istio\mixer.png)
 
 首先，Sidecar会从每一次请求中收集相关信息，如请求的路径，时间，源IP，目地服务，tracing头，日志等，并请这些属性上报给Mixer。Mixer和后端服务之间是通过适配器进行连接的，Mixer将Sidecar上报的内容通过适配器发送给后端服务。
 
@@ -123,7 +123,9 @@ Mixer的架构如图所示:
 
 其次，Sidecar在进行每次请求处理时会通过Mixer进行策略判断，并根据Mixer返回的结果决定是否继续处理该次调用。通过该方式，Mixer将策略决策移出应用层，使运维人员可以在运行期对策略进行配置，动态控制应用的行为，提高了策略控制的灵活性。例如可以配置每个微服务应用的访问白名单，不同客户端的Rate limiting，等等。
 
-从上图可以看到，Istio在Envoy中增加了一个Mixer Filter，该Filter和控制面的Mixer组件进行通讯，完成策略控制和遥测数据收集等功能。微服务之间的每一次请求调用都会经过两次Mixer Filter的处理，一次在发送端，一次在接收端。Envoy在收集每次调用的遥测数据后会先保存在缓存中，每隔一段时间再通过批量的方式上报到Mixer，以避免对服务调用引入较大延时，保证Envoy的转发处理效率。
+逻辑上微服务之间的每一次请求调用都会经过两次Mixer的处理：调用前进行策略判断，调用后进行遥测数据收集。Istio采用了一些机制来避免Mixer的处理影响Envoy的转发效率。
+
+从上图可以看到，Istio在Envoy中增加了一个Mixer Filter，该Filter和控制面的Mixer组件进行通讯，完成策略控制和遥测数据收集功能。Mixer Filter中保存有策略判断所需的数据缓存，因此大部分策略判断在Envoy中就处理了，不需要发送请求到Mixer。另外Envoy收集到的遥测数据会先保存在Envoy的缓存中，每隔一段时间再通过批量的方式上报到Mixer。
 
 
 #### Auth
@@ -241,9 +243,12 @@ Istio通过服务网格承载了微服务之间的通信流量，因此可以在
 测试人员通过Pilot向Envoy注入了一个规则，为发向服务MS-B的请求加入了指定时间的延迟。当客户端请求发向MSB-B时，Envoy会根据该规则为该请求加入时延，引起客户的请求超时。通过设置规则注入故障的方式，测试人员可以很方便地模拟微服务之间的各种通信故障，对微服务应用的健壮性进行较为完整的模拟测试。
 
 ## 总结
-服务网格为微服务提供了一个对应用程序透明的安全、可靠的通信基础设施层。采用服务网格后，微服务应用开发人员可以专注于解决业务领域问题，将一些通用问题交给服务网格处理。采用服务网格后，避免了代码库带来的依赖，可以充分发挥微服务的异构优势，开发团队可以根据业务需求和开发人员能力自由选择技术栈。Istio具有良好的架构设计，提供了强大的二次开发扩展性和用户定制能力。虽然Istio目前还处于beta阶段，但已经获得众多知名公司和产品的支持，是一个非常具有前景的开源服务网格开源项目。
+服务网格为微服务提供了一个对应用程序透明的安全、可靠的通信基础设施层。采用服务网格后，微服务应用开发人员可以专注于解决业务领域问题，将一些通用问题交给服务网格处理。采用服务网格后，避免了代码库带来的依赖，可以充分发挥微服务的异构优势，开发团队可以根据业务需求和开发人员能力自由选择技术栈。
+
+Istio具有良好的架构设计，提供了强大的二次开发扩展性和用户定制能力。虽然Istio目前还处于beta阶段，但已经获得众多知名公司和产品的支持，是一个非常具有前景的开源服务网格开源项目。
 
 ## 参考
 
 * [Istio online documentation](https://istio.io/docs/)
 * [Pattern: Service Mesh](http://philcalcado.com/2017/08/03/pattern_service_mesh.html)
+* [Mixer and the SPOF Myth](https://istio.io/blog/2017/mixer-spof-myth.html)
