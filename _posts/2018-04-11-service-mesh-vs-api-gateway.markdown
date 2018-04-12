@@ -68,7 +68,7 @@ API Gateway和Service Mesh之间的主要不同点：API Gateway是暴露API/边
 
 ## 译者按
 
-API Gateway和Service Mesh的关系是我最近一直在思考的问题，也和同事及社区的朋友之间进行了一下讨论。这篇短文很清晰地总结了两者之间的相似之处以及这两者在微服务架构中的不同用途。
+API Gateway和Service Mesh的关系是我最近一直在思考的问题，也和同事及社区的朋友之间进行了一些讨论。这篇短文很清晰地总结了两者之间的相似之处以及这两者在微服务架构中的不同用途。
 
 文章中提到“可以使用API Gateway内建的服务间通信能力；也可以通过Service Mesh来调用下游服务”。在和同事讨论时，大家提到一个比较重要的考虑因素是在API Gateway处引入一个Sidecar可能带来的额外延迟。
 
@@ -77,7 +77,7 @@ API Gateway作为微服务引用的流量入口，其对效率要求较高，如
 我对此未进行测试，但从理论上来将，服务发现，重试，断路等逻辑无论放到API Gateway还是Service Mesh中耗时都是相同的，部署Sidecar只是增加了创建一个本地链接的消耗，如下图所示:
 ![](\img\in-post\2018-04-11-service-mesh-vs-api-gateway\api-gateway-with-service-mesh.png)
 
-将API Gateway和Service Mesh的功能进行清晰划分，API Gateway负责应用逻辑，Service Mesh负责服务通讯，Metrics收集在架构上更为清晰。对于效率问题，我们可以考虑对API Gateway进行水平扩展来解决。
+将API Gateway和Service Mesh的功能进行清晰划分，API Gateway负责应用逻辑，Service Mesh负责服务通讯，Metrics收集等微服务基础设施，这样划分后在架构上更为清晰。对于效率问题，我们可以考虑对API Gateway进行水平扩展来解决。
 
 ## 原文
 
