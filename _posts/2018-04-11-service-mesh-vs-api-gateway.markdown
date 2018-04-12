@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "（译文）Service Mesh 和 API Gateway的关系探讨"
+title:      "Service Mesh 和 API Gateway的关系探讨（译文）"
 subtitle:   ""
 description: ""
 date:       2018-04-11 09:32:00
