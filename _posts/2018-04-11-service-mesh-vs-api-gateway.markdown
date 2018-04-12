@@ -81,5 +81,5 @@ API Gateway作为微服务引用的流量入口，其对效率要求较高，如
 
 ## 原文
 
-* [Service Mesh vs API Gateway](https://medium.com/microservices-in-practice/service-mesh-vs-api-gateway-a6d814b9bf56)
+本译文发表已征得原作者同意，原文参见 [Service Mesh vs API Gateway](https://medium.com/microservices-in-practice/service-mesh-vs-api-gateway-a6d814b9bf56)
 
