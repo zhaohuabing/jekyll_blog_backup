@@ -41,7 +41,7 @@ API Gateway也内置了以下特性的支持，包括：服务发现，分析（
 
 API Gateway和API管理生态系统的其他组件的关系紧密，比如： API 市场/商店， API 发布门户。
 
-## Service Mesh
+## Service Mesh：微服务的网络通信基础设施
 
 现在我们来看看Service Mesh有哪些不同。
 
