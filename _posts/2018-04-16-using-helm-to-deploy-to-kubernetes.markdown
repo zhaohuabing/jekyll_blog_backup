@@ -18,20 +18,17 @@ tags:
 * 目录
 {:toc}
 
-## 介绍
-
-
 ## Helm是什么？
-如果你使用过Linux系统，那么一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以一种一致而且简单的方式安装使用应用程序。
+如果你使用过Linux系统，那么一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
 
-我们可以Helm将看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用。对于使用者而言，使用Helm后可以不用了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
+可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
 
 ## Helm相关术语
 
 * Helm Kubernetes的应用打包工具，也是命令行工具的名称。
 * Tiller Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
 * Chart Helm的打包格式，内部包含了一组相关的kubernetes资源。
-* Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。和我们通常理解的版本发布Release有所不同，可以理解为Chart部署的一个实例。
+* Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。和我们通常理解的版本发布Release有所不同，这里的Release可以理解为Chart部署的一个实例。
 
 ## 安装Helm
 
@@ -174,7 +171,7 @@ testapi 1               Mon Apr 16 10:21:44 2018        DEPLOYED        testapi-
 在输出中有一个Revision（修改版本）字段，该字段用于表示某一Release被更新的次数，可以用该特性对已部署的Release进行回滚。
 
 ## 升级和回退
-修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后打包。
+修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后使用Helm package命令打包并发布到本地仓库。
 
 查看本地库中的Chart信息
 
