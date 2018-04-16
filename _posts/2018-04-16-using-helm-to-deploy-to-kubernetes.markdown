@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Kubernetes的包管理工具: Helm"
+title:      "Helm：强大的Kubernetes包管理工具"
 subtitle:   ""
 description: ""
 date:       2018-04-16 15:00:00
