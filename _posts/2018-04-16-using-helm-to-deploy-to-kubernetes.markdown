@@ -19,16 +19,18 @@ tags:
 {:toc}
 
 ## Helm是什么？
-如果你使用过Linux系统，那么一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
+使用过Linux系统的同学一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
 
-可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
+我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
 
 ## Helm相关术语
 
 * Helm Kubernetes的应用打包工具，也是命令行工具的名称。
 * Tiller Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
 * Chart Helm的打包格式，内部包含了一组相关的kubernetes资源。
-* Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。和我们通常理解的版本发布Release有所不同，这里的Release可以理解为Chart部署的一个实例。
+* Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
+
+>  和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。其实Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
 
 ## 安装Helm
 
@@ -48,7 +50,7 @@ Helm init
 
 ## 构建一个Helm chart
 
-让我们在实践中来了解Helm。这里将使用我创建的一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。
+让我们在实践中来了解Helm。这里将使用一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。
 
 ```
 git clone https://github.com/daemonza/testapi.git; cd testapi
@@ -100,7 +102,7 @@ resources:
  helm lint
 ```
 
-如果一切正常，可以使用下面的命令将chart打包为一个版本：
+如果一切正常，可以使用下面的命令对chart进行打包：
 
 ```
 helm package testapi-chart --debug
@@ -113,7 +115,7 @@ Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to current d
 Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to /Users/daemonza/.helm/repository/local
 ```
 
-从输出可以看到，chart被放到了当前目录下，并同时被保存到了helm的本地仓库中。
+从输出可以看到，chart被打包为一个压缩包testapi-chart-0.0.1.tgz，该压缩包被放到了当前目录下，并同时被保存到了helm的本地仓库中。
 
 通过Helm search命令可以查看仓库中的Chart
 
@@ -124,7 +126,7 @@ NAME                    CHART VERSION   APP VERSION     DESCRIPTION
 local/testapi-chart     0.0.1                           A Helm chart for Kubernetes
 ```
 ## 在kubernetes中部署Chart
-然后部署这个版本的chart，部署时指定chart名及Release名：
+chart被发布到仓储后，可以通过Helm instal命令部署chart，部署时指定chart名及Release（部署的实例）名：
 ```
  helm install local/testapi-chart --name testapi
 ```
@@ -168,12 +170,12 @@ NAME    REVISION        UPDATED                         STATUS          CHART   
 testapi 1               Mon Apr 16 10:21:44 2018        DEPLOYED        testapi-chart-0.0.1     default
 ```
 
-在输出中有一个Revision（修改版本）字段，该字段用于表示某一Release被更新的次数，可以用该特性对已部署的Release进行回滚。
+可以看到在输出中有一个Revision（更改历史）字段，该字段用于表示某一Release被更新的次数，可以用该特性对已部署的Release进行回滚。
 
 ## 升级和回退
 修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后使用Helm package命令打包并发布到本地仓库。
 
-查看本地库中的Chart信息
+查看本地库中的Chart信息，可以看到在本地仓库中testapi-chart有两个版本
 
 ```Bash
 helm search testapi -l
@@ -200,7 +202,6 @@ testapi 2               Mon Apr 16 10:43:10 2018        DEPLOYED        testapi-
 
 ```Bash
 helm history testapi
-helm history testapi
 REVISION        UPDATED                         STATUS          CHART                   DESCRIPTION
 1               Mon Apr 16 10:21:44 2018        SUPERSEDED      testapi-chart-0.0.1     Install complete
 2               Mon Apr 16 10:43:10 2018        DEPLOYED        testapi-chart-1.0.0     Upgrade complete
@@ -218,8 +219,17 @@ NAME    REVISION        UPDATED                         STATUS          CHART   
 testapi 3               Mon Apr 16 10:48:20 2018        DEPLOYED        testapi-chart-0.0.1     default
 ```
 
+## Helm Repository
+在前面的例子中，我们使用本地仓库来发布chart并部署应用程序，这种方式可以在本机工作良好，但如果希望将chart发布到网络上给其他人使用，就要使用到Helm repository。
+
+Helm repository是一个web服务器，该服务器提供了一个该服务器中所有chart的清单，并保存了所有chart文件以供下载。Chart文件是tar.gz压缩文件，里面包含了kubernetes的资源文件。使用Helm serve命令可以在本机启动一个Helm Repository服务器。
+
+```Bash
+helm serve --repo-path ./charts
+```
+
 ## 参考
 
-[Using Helm to deploy to Kubernetes](https://.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/)
+[Using Helm to deploy to Kubernetes](https://daemonza.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/)
 [Helm documentation](https://docs.helm.sh/helm/)
 
