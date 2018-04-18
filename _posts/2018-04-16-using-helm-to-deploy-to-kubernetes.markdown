@@ -83,7 +83,18 @@ git clone https://github.com/daemonza/testapi.git; cd testapi
 helm create testapi-chart
 ```
 
-该命令创建一个testapi-chart目录，主要关注目录中的这三个文件即可: Chart.yaml，values.yaml 和 NOTES.txt。
+该命令创建一个testapi-chart目录，该目录结构如下所示，我们主要关注目录中的这三个文件即可: Chart.yaml，values.yaml 和 NOTES.txt。
+```Bash
+testapi-chart
+├── charts
+├── Chart.yaml
+├── templates
+│   ├── deployment.yaml
+│   ├── _helpers.tpl
+│   ├── NOTES.txt
+│   └── service.yaml
+└── values.yaml
+```
 
 * Chart.yaml 用于描述这个chart，包括名字，描述信息以及版本。
 * values.yaml 用于存储templates目录中模板文件中用到的变量。 模板文件一般是Go模板。如果你需要了解更多关于Go模板的相关信息，可以查看Hugo (https://gohugo.io) 的一个关于Go模板的介绍 (https://gohugo.io/templates/go-templates/)。
@@ -121,10 +132,14 @@ resources:
 在 testapi_chart 目录下运行下面命令以对chart进行校验。
 
 ```
- helm lint
+helm lint
+==> Linting .
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, no failures
 ```
 
-如果一切正常，可以使用下面的命令对chart进行打包：
+如果文件格式错误，可以根据提示进行修改；如果一切正常，可以使用下面的命令对chart进行打包：
 
 ```
 helm package testapi-chart --debug
@@ -146,7 +161,7 @@ helm search testapi
 No results found
 ```
 
-这是因为本地的repository目录中的chart还没有被加入Helm中。我们可以在本地启动一个Repository Server并将其加入到Helm repo列表中。
+这是因为repository目录中的chart还没有被Helm管理。我们可以在本地启动一个Repository Server，并将其加入到Helm repo列表中。
 
 通过helm repo list命令可以看到目前helm中只配置了一个名为stable的repo，该repo指向了google的一个服务器。
 ```Bash
