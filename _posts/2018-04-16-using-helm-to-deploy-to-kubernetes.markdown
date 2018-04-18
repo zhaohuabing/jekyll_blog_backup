@@ -26,11 +26,12 @@ kubernetes的核心设计理念是用户定义应用程序的规格，而kuberne
 用户通过使用kubernetes API对象来描述应用程序规格，包括Pod，Service，Volume，Namespace，ReplicaSet，Deployment，Job等等。一般这些对象需要写入一些列yaml文件中，然后通过kubernetes命令行工具kubectl进行部署。
 
 以下面的wordpress应用程序为例，涉及到多个kubernetes API对象，这些kubernetes API对象分散在多个yaml文件中。
-![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernete\wordpress.png)
+![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\wordpress.png)
+
 
 我们面临的问题是：如何管理，编辑和更新这些这些分散的kubernetes应用配置文件？如何把一套的相关配置文件作为一个应用进行管理？如何分发和重用kubernetes的应用配置？
 
-Helm的引入完美地解决上面这些问题。
+Helm的引入很好地解决上面这些问题。
 
 
 ## Helm是什么？
@@ -47,7 +48,7 @@ Helm的引入完美地解决上面这些问题。
 
 >  和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。其实Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
 
-![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernete\helm-architecture.png)
+![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\helm-architecture.png)
 
 ## 安装Helm
 
