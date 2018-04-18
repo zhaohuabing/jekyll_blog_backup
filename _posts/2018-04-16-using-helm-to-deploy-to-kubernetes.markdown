@@ -6,7 +6,7 @@ description: ""
 date:       2018-04-16 15:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/buffalo.jpg"
-published: true
+published: false
 tags:
     - Kubernetes
     - Helm
