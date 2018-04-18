@@ -21,9 +21,9 @@ tags:
 ## Kubernetes应用部署的挑战
 让我们首先来看看Kubernetes，kubernetes提供了基于容器的应用集群管理，为容器化应用提供了部署运行、资源调度、服务发现和动态伸缩等一系列完整功能。
 
-kubernetes的核心设计理念是用户定义应用程序的规格，而kubernetes则负责保证应用程序按照定义的规则部署并运行，如果应用系统出现问题，则kubernetes负责对其进行自动修正。例如假若应用规格要求部署两个实例，其中一个实例异常终止了，kubernetes会检查到并重新启动一个新的实例。
+kubernetes的核心设计理念是: 用户定义应用程序的规格，而kubernetes则负责按照定义的规则部署并运行应用程序，如果应用系统出现问题导致偏离了定义的规格，kubernetes负责对其进行自动修正。例如应用规格要求部署两个实例，其中一个实例异常终止了，kubernetes会检查到并重新启动一个新的实例。
 
-用户通过使用kubernetes API对象来描述应用程序规格，包括Pod，Service，Volume，Namespace，ReplicaSet，Deployment，Job等等。一般这些对象需要写入一些列yaml文件中，然后通过kubernetes命令行工具kubectl进行部署。
+用户通过使用kubernetes API对象来描述应用程序规格，包括Pod，Service，Volume，Namespace，ReplicaSet，Deployment，Job等等。一般这些对象需要写入一系列的yaml文件中，然后通过kubernetes命令行工具kubectl进行部署。
 
 以下面的wordpress应用程序为例，涉及到多个kubernetes API对象，这些kubernetes API对象分散在多个yaml文件中。
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\wordpress.png)
