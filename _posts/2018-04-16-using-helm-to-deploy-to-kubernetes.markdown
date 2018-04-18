@@ -18,19 +18,36 @@ tags:
 * 目录
 {:toc}
 
+## Kubernetes应用部署的挑战
+让我们首先来看看Kubernetes，kubernetes提供了基于容器的应用集群管理，为容器化应用提供了部署运行、资源调度、服务发现和动态伸缩等一系列完整功能。
+
+kubernetes的核心设计理念是用户定义应用程序的规格，而kubernetes则负责保证应用程序按照定义的规则部署并运行，如果应用系统出现问题，则kubernetes负责对其进行自动修正。例如假若应用规格要求部署两个实例，其中一个实例异常终止了，kubernetes会检查到并重新启动一个新的实例。
+
+用户通过使用kubernetes API对象来描述应用程序规格，包括Pod，Service，Volume，Namespace，ReplicaSet，Deployment，Job等等。一般这些对象需要写入一些列yaml文件中，然后通过kubernetes命令行工具kubectl进行部署。
+
+以下面的wordpress应用程序为例，涉及到多个kubernetes API对象，这些kubernetes API对象分散在多个yaml文件中。
+![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernete\wordpress.png)
+
+我们面临的问题是：如何管理，编辑和更新这些这些分散的kubernetes应用配置文件？如何把一套的相关配置文件作为一个应用进行管理？如何分发和重用kubernetes的应用配置？
+
+Helm的引入完美地解决上面这些问题。
+
+
 ## Helm是什么？
 使用过Linux系统的同学一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
 
 我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
 
-## Helm相关术语
-
+## Helm组件及相关术语
 * Helm Kubernetes的应用打包工具，也是命令行工具的名称。
 * Tiller Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
 * Chart Helm的打包格式，内部包含了一组相关的kubernetes资源。
+* Repoistory Helm repository是一个web服务器，提供了该服务中所有chart的清单，并保存了chart文件以供下载。
 * Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
 
 >  和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。其实Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
+
+![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernete\helm-architecture.png)
 
 ## 安装Helm
 
@@ -115,9 +132,37 @@ Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to current d
 Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to /Users/daemonza/.helm/repository/local
 ```
 
-从输出可以看到，chart被打包为一个压缩包testapi-chart-0.0.1.tgz，该压缩包被放到了当前目录下，并同时被保存到了helm的本地仓库中。
+chart被打包为一个压缩包testapi-chart-0.0.1.tgz，该压缩包被放到了当前目录下，并同时被保存到了helm的本地缺省仓库目录中。
 
-通过Helm search命令可以查看仓库中的Chart
+## Helm Repository
+通过Helm search命令，会发现找不到刚才生成的chart包。
+```
+helm search testapi
+No results found
+```
+
+这是因为本地的repository目录中的chart还没有被加入Helm中。我们可以在本地启动一个Repository Server并将其加入到Helm repo列表中。
+
+通过helm repo list命令可以看到目前helm中只配置了一个名为stable的repo，该repo指向了google的一个服务器。
+```Bash
+helm repo list
+NAME    URL
+stable  https://kubernetes-charts.storage.googleapis.com
+```
+
+使用helm serve命令启动一个repo server，该server缺省使用'$HELM_HOME/repository/local'目录作为chart存储，并在8879端口上提供服务。
+
+```Bash
+helm serve&
+Now serving you on 127.0.0.1:8879
+```
+启动本地repo server后，将其加入helm的repo列表。
+```Bash
+helm repo add local http://127.0.0.1:8879
+"local" has been added to your repositories
+```
+
+现在再查找testapi chart包，就可以找到了。
 
 ```Bash
 helm search testapi
@@ -125,6 +170,7 @@ helm search testapi
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION
 local/testapi-chart     0.0.1                           A Helm chart for Kubernetes
 ```
+
 ## 在kubernetes中部署Chart
 chart被发布到仓储后，可以通过Helm instal命令部署chart，部署时指定chart名及Release（部署的实例）名：
 ```
@@ -218,15 +264,8 @@ helm list
 NAME    REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
 testapi 3               Mon Apr 16 10:48:20 2018        DEPLOYED        testapi-chart-0.0.1     default
 ```
-
-## Helm Repository
-在前面的例子中，我们使用本地仓库来发布chart并部署应用程序，这种方式可以在本机工作良好，但如果希望将chart发布到网络上给其他人使用，就要使用到Helm repository。
-
-Helm repository是一个web服务器，该服务器提供了一个该服务器中所有chart的清单，并保存了所有chart文件以供下载。Chart文件是tar.gz压缩文件，里面包含了kubernetes的资源文件。使用Helm serve命令可以在本机启动一个Helm Repository服务器。
-
-```Bash
-helm serve --repo-path ./charts
-```
+## 总结
+Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能，是kubernetes应用管理的一个强力的增强和补充。
 
 ## 参考
 
