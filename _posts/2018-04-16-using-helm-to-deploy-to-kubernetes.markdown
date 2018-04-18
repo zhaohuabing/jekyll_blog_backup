@@ -26,13 +26,14 @@ kubernetes的核心设计理念是: 用户定义应用程序的规格，而kuber
 用户通过使用kubernetes API对象来描述应用程序规格，包括Pod，Service，Volume，Namespace，ReplicaSet，Deployment，Job等等。一般这些对象需要写入一系列的yaml文件中，然后通过kubernetes命令行工具kubectl进行部署。
 
 以下面的wordpress应用程序为例，涉及到多个kubernetes API对象，这些kubernetes API对象分散在多个yaml文件中。
+
+图1： Wordpress应用程序中涉及到的kubernetes API对象
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\wordpress.png)
 
 
 我们面临的问题是：如何管理，编辑和更新这些这些分散的kubernetes应用配置文件？如何把一套的相关配置文件作为一个应用进行管理？如何分发和重用kubernetes的应用配置？
 
 Helm的引入很好地解决上面这些问题。
-
 
 ## Helm是什么？
 使用过Linux系统的同学一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
@@ -48,11 +49,14 @@ Helm的引入很好地解决上面这些问题。
 
 >  和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。其实Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
 
+图2： Helm软件架构
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\helm-architecture.png)
 
 ## 安装Helm
 
-可参考Helm的帮助文档https://docs.helm.sh/using_helm/#installing-helm
+下面我们通过一个完整的示例来介绍Helm的相关概念，并学习如何使用Helm打包，分发，安装，升级及回退kubernetes应用。
+
+可以参考Helm的帮助文档https://docs.helm.sh/using_helm/#installing-helm 安装Helm
 
 采用二进制的方式安装Helm
 
