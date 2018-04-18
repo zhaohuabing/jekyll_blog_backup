@@ -271,4 +271,5 @@ Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包
 
 [Using Helm to deploy to Kubernetes](https://daemonza.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/)
 [Helm documentation](https://docs.helm.sh/helm/)
+[Helm - Application deployment management for Kubernetes](https://www.slideshare.net/alexLM/helm-application-deployment-management-for-kubernetes)
 
