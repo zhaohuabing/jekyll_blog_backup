@@ -155,7 +155,7 @@ Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to /Users/da
 chart被打包为一个压缩包testapi-chart-0.0.1.tgz，该压缩包被放到了当前目录下，并同时被保存到了helm的本地缺省仓库目录中。
 
 ## Helm Repository
-通过Helm search命令，会发现找不到刚才生成的chart包。
+虽然我们已经打包了chart并发布到了helm的本地目录中，但通过Helm search命令查找，并不能找不到刚才生成的chart包。
 ```
 helm search testapi
 No results found
