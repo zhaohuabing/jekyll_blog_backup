@@ -42,7 +42,7 @@ kubernetes的核心设计理念是: 用户定义应用程序的规格，而kuber
 Helm的引入很好地解决上面这些问题。
 
 ## Helm是什么？
-相信很多人都使用过Ubuntu下的ap-get或者CentOS下的yum, 这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
+很多人都使用过Ubuntu下的ap-get或者CentOS下的yum, 这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
 
 我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。
 
@@ -53,7 +53,9 @@ Helm的引入很好地解决上面这些问题。
 除此以外，Helm还提供了kubernetes上的软件部署，删除，升级，回滚应用的强大功能。
 
 ## Helm组件及相关术语
-开始接触Helm时遇到的一个常见问题就是Helm中的一些概念和术语非常让人疑惑，让我们先了解一下Helm的这些相关概念和术语。
+接触Helm遇到的一个常见问题是Helm中的一些概念和术语比较让人疑惑，从而影响对Helm的理解。
+
+因此我们先了解一下Helm的这些相关概念和术语。
 
 * Helm   
   Kubernetes的应用打包工具，也是命令行工具的名称。
