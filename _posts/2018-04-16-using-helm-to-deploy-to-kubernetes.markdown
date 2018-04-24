@@ -18,6 +18,9 @@ tags:
 * 目录
 {:toc}
 
+##前言
+Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。
+
 ## Kubernetes应用部署的挑战
 让我们首先来看看Kubernetes，kubernetes提供了基于容器的应用集群管理，为容器化应用提供了部署运行、资源调度、服务发现和动态伸缩等一系列完整功能。
 
@@ -31,23 +34,42 @@ kubernetes的核心设计理念是: 用户定义应用程序的规格，而kuber
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\wordpress.png)
 
 
-我们面临的问题是：如何管理，编辑和更新这些这些分散的kubernetes应用配置文件？如何把一套的相关配置文件作为一个应用进行管理？如何分发和重用kubernetes的应用配置？
+可以看到，在进行kubernetes软件部署时，我们面临下述问题：
+* 如何管理，编辑和更新这些这些分散的kubernetes应用配置文件？
+* 如何把一套的相关配置文件作为一个应用进行管理？
+* 如何分发和重用kubernetes的应用配置？
 
 Helm的引入很好地解决上面这些问题。
 
 ## Helm是什么？
-使用过Linux系统的同学一定很熟悉CentOS的yum或者Ubuntu的ap-get,这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
+相信很多人都使用过Ubuntu下的ap-get或者CentOS下的yum, 这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。
 
-我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。Helm还以chart的方式提供了部署，删除，升级，回滚应用的强大功能。
+我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (https://deis.com/) 开发的一个用于kubernetes的包管理器。
+
+对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。
+
+对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。
+
+除此以外，Helm还提供了kubernetes上的软件部署，删除，升级，回滚应用的强大功能。
 
 ## Helm组件及相关术语
-* Helm Kubernetes的应用打包工具，也是命令行工具的名称。
-* Tiller Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
-* Chart Helm的打包格式，内部包含了一组相关的kubernetes资源。
-* Repoistory Helm repository是一个web服务器，提供了该服务中所有chart的清单，并保存了chart文件以供下载。
-* Release 使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
+开始接触Helm时遇到的一个常见问题就是Helm中的一些概念和术语非常让人疑惑，让我们先了解一下Helm的这些相关概念和术语。
 
->  和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。其实Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
+* Helm   
+  Kubernetes的应用打包工具，也是命令行工具的名称。
+* Tiller 
+  Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
+* Chart 
+  Helm的打包格式，内部包含了一组相关的kubernetes资源。
+* Repoistory 
+  Helm repository是一个web服务器，提供了该服务中所有chart的清单，并保存了chart文件以供下载。
+* Release 
+  使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
+
+>  需要特别注意的是， Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。
+>  其实Helm中的Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
+
+下面这张图描述了Helm的几个关键组件Helm（客户端），Tiller（服务器），Repository（Chart软件仓库），Chart（软件包）之前的关系。
 
 图2： Helm软件架构
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\helm-architecture.png)
@@ -75,7 +97,8 @@ Helm init
 让我们在实践中来了解Helm。这里将使用一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。
 
 ```
-git clone https://github.com/daemonza/testapi.git; cd testapi
+git clone https://github.com/zhaohuabing/testapi.git; 
+cd testapi
 ```
 
 首先创建一个chart的骨架
@@ -285,7 +308,7 @@ NAME    REVISION        UPDATED                         STATUS          CHART   
 testapi 3               Mon Apr 16 10:48:20 2018        DEPLOYED        testapi-chart-0.0.1     default
 ```
 ## 总结
-Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能，是kubernetes应用管理的一个强力的增强和补充。
+Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能。Helm以Chart软件包的形式简化Kubernetes的应用管理，提高了对用户的友好性。
 
 ## 参考
 
