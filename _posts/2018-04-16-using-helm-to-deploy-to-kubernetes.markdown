@@ -58,14 +58,19 @@ Helm的引入很好地解决上面这些问题。
 因此我们先了解一下Helm的这些相关概念和术语。
 
 * Helm   
+
   Kubernetes的应用打包工具，也是命令行工具的名称。
 * Tiller 
+
   Helm的服务端，部署在Kubernetes集群中，用于处理Helm的相关命令。
 * Chart 
+
   Helm的打包格式，内部包含了一组相关的kubernetes资源。
 * Repoistory 
+  
   Helm repository是一个web服务器，提供了该服务中所有chart的清单，并保存了chart文件以供下载。
 * Release 
+  
   使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
 
 >  需要特别注意的是， Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。
@@ -315,7 +320,7 @@ Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包
 
 ## 参考
 
-[Using Helm to deploy to Kubernetes](https://daemonza.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/)
-[Helm documentation](https://docs.helm.sh/helm/)
-[Helm - Application deployment management for Kubernetes](https://www.slideshare.net/alexLM/helm-application-deployment-management-for-kubernetes)
+* [Using Helm to deploy to Kubernetes](https://daemonza.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/)
+* [Helm documentation](https://docs.helm.sh/helm/)
+* [Helm - Application deployment management for Kubernetes](https://www.slideshare.net/alexLM/helm-application-deployment-management-for-kubernetes)
 
