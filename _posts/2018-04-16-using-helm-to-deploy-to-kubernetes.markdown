@@ -69,6 +69,7 @@ Helm的引入很好地解决上面这些问题。
   使用Helm install命令在Kubernetes集群中安装的Chart称为Release。
 
 >  需要特别注意的是， Helm中提到的Release和我们通常概念中的版本有所不同，这里的Release可以理解为Helm使用Chart包部署的一个应用实例。
+>  
 >  其实Helm中的Release叫做Deployment更合适。估计因为Deployment这个概念已经被Kubernetes使用了，因此Helm才采用了Release这个术语。
 
 下面这张图描述了Helm的几个关键组件Helm（客户端），Tiller（服务器），Repository（Chart软件仓库），Chart（软件包）之前的关系。
