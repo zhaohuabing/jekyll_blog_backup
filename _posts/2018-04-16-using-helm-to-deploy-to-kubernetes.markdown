@@ -106,6 +106,7 @@ Helm init
 ```
 
 ## 构建一个Helm chart
+- - -
 
 让我们在实践中来了解Helm。这里将使用一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。
 
@@ -277,6 +278,8 @@ testapi 1               Mon Apr 16 10:21:44 2018        DEPLOYED        testapi-
 可以看到在输出中有一个Revision（更改历史）字段，该字段用于表示某一Release被更新的次数，可以用该特性对已部署的Release进行回滚。
 
 ## 升级和回退
+- - -
+
 修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后使用Helm package命令打包并发布到本地仓库。
 
 查看本地库中的Chart信息，可以看到在本地仓库中testapi-chart有两个版本
@@ -323,6 +326,8 @@ NAME    REVISION        UPDATED                         STATUS          CHART   
 testapi 3               Mon Apr 16 10:48:20 2018        DEPLOYED        testapi-chart-0.0.1     default
 ```
 ## 总结
+- - -
+
 Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能。Helm以Chart软件包的形式简化Kubernetes的应用管理，提高了对用户的友好性。
 
 ## Q&A
