@@ -325,29 +325,28 @@ testapi 3               Mon Apr 16 10:48:20 2018        DEPLOYED        testapi-
 ## 总结
 Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能。Helm以Chart软件包的形式简化Kubernetes的应用管理，提高了对用户的友好性。
 
-##Q&A
+## Q&A
 - - -
 
-昨天在Docker.io技术微信群里面进行了Helm的分享，下面是分享过程中得到的一些有意思的反馈。
+昨天在Docker.io技术微信群里面进行了Helm的分享，下面是分享过程中得到的一些有意思的反馈，进一步启发了我自己的一些思考。
 
-Q：helm结合CD有什么好的建议吗？
+**Q**: Helm结合CD有什么好的建议吗？<BR>
+**A**: 采用Helm可以把零散的Kubernetes应用配置文件作为一个chart管理，chart源码可以和源代码一起放到git库中管理。Helm还简了在CI/CD pipeline的软件部署流程。通过把chart参数化，可以在测试环境和生产环境可以采用不同的chart参数配置。
 
-A:采用Helm可以把零散的Kubernetes应用配置文件作为一个chart管理，chart源码可以和源代码一起放到git库中管理。Helm还简了在CI/CD pipeline的软件部署流程。通过把chart参数化，可以在测试环境和生产环境可以采用不同的chart参数配置。
+下图是采用了Helm的一个CI/CD流程
 ![](\img\in-post\2018-04-16-using-helm-to-deploy-to-kubernetes\ci-cd-jenkins-helm-k8s.png)
 
-Q:chart的reversion 可以自定义吗？比如跟git的tag
+**Q**: 感谢分享，请问下多环境(test,staging，production)的业务配置如何管理呢？通过heml打包configmap吗，比如配置文件更新，也要重新打chats包吗？谢谢，这块我比较乱<BR>
+**A**：Chart是支持参数替换的，可以把业务配置相关的参数设置为模板变量。使用Helm install Chart的时候可以指定一个参数值文件，这样就可以把业务参数从Chart中剥离了。例子： helm install --values=myvals.yaml wordpress
 
-A:这位朋友应该是把chart的version和Release的reversion搞混了，呵呵。 Chart是没有reversion的，Chart部署的一个实例（Release）才有Reversion，Reversion是Release被更新后自动生成的。
+**Q**: chart的reversion 可以自定义吗？比如跟git的tag<BR>
+**A**: 这位朋友应该是把chart的version和Release的reversion搞混了，呵呵。 Chart是没有reversion的，Chart部署的一个实例（Release）才有Reversion，Reversion是Release被更新后自动生成的。
 
-Q:没有看到helm指向k8s的配置，怎么确认在哪个K8s集群运行的？
-A:使用和kubectl相同的配置，在 ~/.kube/config 中。
+**Q**: 没有看到helm指向k8s的配置，怎么确认在哪个K8s集群运行的？<BR>
+**A**: 使用和kubectl相同的配置，在 ~/.kube/config 中。
 
-Q: 这个简单例子并没有看出 Helm 相比 kubectl 有哪些优势，可以简要说一下吗？
-A： Helm将kubernetes应用作为一个软件包整体管理，例如一个应用可能有前端服务器，后端服务器，数据库，这样会涉及多个Kubernetes 部署配置文件，Helm就整体管理了。另外Helm还提供了软件包版本，一键安装，升级，回退。Kubectl和Helm就好比你手工下载安装一个应用 和 使用apt-get 安装一个应用的区别。
-
-Q:感谢分享，请问下多环境(test,staging，production)的业务配置如何管理呢？通过heml打包configmap吗，比如配置文件更新，也要重新打chats包吗？谢谢，这块我比较乱
-
-A：Chart是支持参数替换的，可以把业务配置相关的参数设置为模板变量。使用Helm install Chart的时候可以指定一个参数值文件，这样就可以把业务参数从Chart中剥离了。例子： helm install --values=myvals.yaml wordpress
+**Q**: 这个简单例子并没有看出 Helm 相比 kubectl 有哪些优势，可以简要说一下吗？<BR>
+**A**： Helm将kubernetes应用作为一个软件包整体管理，例如一个应用可能有前端服务器，后端服务器，数据库，这样会涉及多个Kubernetes 部署配置文件，Helm就整体管理了。另外Helm还提供了软件包版本，一键安装，升级，回退。Kubectl和Helm就好比你手工下载安装一个应用 和 使用apt-get 安装一个应用的区别。
 
 
 ## 参考
