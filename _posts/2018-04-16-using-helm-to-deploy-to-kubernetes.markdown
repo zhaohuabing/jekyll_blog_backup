@@ -344,15 +344,29 @@ Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包
 **Q**: 感谢分享，请问下多环境(test,staging，production)的业务配置如何管理呢？通过heml打包configmap吗，比如配置文件更新，也要重新打chats包吗？谢谢，这块我比较乱<BR>
 **A**：Chart是支持参数替换的，可以把业务配置相关的参数设置为模板变量。使用Helm install Chart的时候可以指定一个参数值文件，这样就可以把业务参数从Chart中剥离了。例子： helm install --values=myvals.yaml wordpress
 
+**Q**: helm能解决服务依赖吗？
+**A**：可以的，在chart可以通过requirements.yaml声明对其他chart的依赖关系。如下面声明表明chart依赖apache和mysql这两个第三方chart。
+```yaml
+dependencies:
+  - name: apache
+    version: 1.2.3
+    repository: http://example.com/charts
+  - name: mysql
+    version: 3.2.1
+    repository: http://another.example.com/charts
+```
+
 **Q**: chart的reversion 可以自定义吗？比如跟git的tag<BR>
 **A**: 这位朋友应该是把chart的version和Release的reversion搞混了，呵呵。 Chart是没有reversion的，Chart部署的一个实例（Release）才有Reversion，Reversion是Release被更新后自动生成的。
 
 **Q**: 没有看到helm指向k8s的配置，怎么确认在哪个K8s集群运行的？<BR>
-**A**: 使用和kubectl相同的配置，在 ~/.kube/config 中。
+**A**: 使用和kubectl相同的配置，在  ~/.kube/config 中。
 
 **Q**: 这个简单例子并没有看出 Helm 相比 kubectl 有哪些优势，可以简要说一下吗？<BR>
 **A**： Helm将kubernetes应用作为一个软件包整体管理，例如一个应用可能有前端服务器，后端服务器，数据库，这样会涉及多个Kubernetes 部署配置文件，Helm就整体管理了。另外Helm还提供了软件包版本，一键安装，升级，回退。Kubectl和Helm就好比你手工下载安装一个应用 和 使用apt-get 安装一个应用的区别。
 
+**Q**: 如何在helm install 时指定命名空间？
+**A**: helm install local/testapi-chart --name testapi --namespace mynamespace
 
 ## 参考
 - - -
