@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Helm：强大的Kubernetes包管理工具"
-subtitle:   ""
+title:      "Helm介绍"
+subtitle:   "强大的Kubernetes包管理工具"
 description: ""
 date:       2018-04-16 15:00:00
 author:     "赵化冰"
