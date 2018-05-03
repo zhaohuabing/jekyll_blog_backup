@@ -84,6 +84,10 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 # Friends
 friends: [
     {
+        title: "Linda的博客",
+        href: "https://zhaozhihan.com"
+    },
+    
         title: "ServiceMesh中文网",
         href: "http://www.servicemesh.cn"
     },{
