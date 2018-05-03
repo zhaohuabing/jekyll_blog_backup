@@ -1,9 +1,9 @@
 # Site settings
-title: 赵化冰的网络日志
-SEOTitle: 赵化冰的网络日志 | Zhaohuabing Blog
+title: 赵化冰的博客
+SEOTitle: 赵化冰的博客 | Zhaohuabing Blog
 header-img: img/home-bg-jeep.jpg
 email: zhaohuabing@gmail.com
-description: "赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的网络日志，与你一起发现更大的世界。"
+description: "赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。"
 keyword: "赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice"
 url: "http://zhaohuabing.com"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
