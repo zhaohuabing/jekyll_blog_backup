@@ -6,6 +6,7 @@ description: ""
 date:       2018-05-01 21:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-01-may-day-jiulonghu/snowmountain.jpg"
+published: hide
 hide-in-home: true
 tags:
     - 自驾游
