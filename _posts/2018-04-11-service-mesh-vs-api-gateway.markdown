@@ -2,6 +2,7 @@
 layout:     post
 title:      "Service Mesh 和 API Gateway的关系探讨（译文）"
 subtitle:   ""
+description: "API Gateway和Service Mesh的关系是我最近一直在思考的问题，也和同事及社区的朋友之间进行了一些讨论。这篇短文很清晰地总结了两者之间的相似之处以及这两者在微服务架构中的不同用途。"
 date:       2018-04-11 09:32:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-04-11-service-mesh-vs-api-gateway/background.jpg"

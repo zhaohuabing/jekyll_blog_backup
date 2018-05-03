@@ -2,7 +2,7 @@
 layout:     post 
 title:      "Nginx开源Service Mesh组件Nginmesh安装指南"
 subtitle:   ""
-description: "采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。"
+description: "Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。"
 date:       2018-01-02 12:00:00
 author:     "赵化冰"
 header-img: "img/post-bg-2015.jpg"
