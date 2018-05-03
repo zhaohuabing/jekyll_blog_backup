@@ -2,7 +2,6 @@
 layout:     post
 title:      "Service Mesh 和 API Gateway的关系探讨（译文）"
 subtitle:   ""
-description: ""
 date:       2018-04-11 09:32:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-04-11-service-mesh-vs-api-gateway/background.jpg"
