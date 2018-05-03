@@ -6,7 +6,7 @@ description: ""
 date:       2018-04-25 20:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-4-25-istio-auto-injection-with-webhook/lion.jpg"
-published: true
+published: hide
 tags:
     - Kubernetes
     - Helm
