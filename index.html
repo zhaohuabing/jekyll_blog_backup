@@ -15,11 +15,11 @@ description: "记录我的所思所想"
         </h3>
         {% endif %}
         <div class="post-content-preview">
-            //{% if post.description %}
-            //    {{ post.description | strip_html | truncate:200 }}
-            //{% else %}
+            {% if post.description %}
+                {{ post.description | strip_html | truncate:200 }}
+            {% else %}
                 {{ post.content | strip_html | truncate:200 }}
-            //{% endif %}
+            {% endif %}
         </div>
     </a>
     <p class="post-meta">
