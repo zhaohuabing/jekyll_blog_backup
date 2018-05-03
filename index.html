@@ -4,6 +4,7 @@ description: "记录我的所思所想"
 ---
 
 {% for post in paginator.posts %}
+{% if post.hide-in-home != "true" %}
 <div class="post-preview">
     <a href="{{ post.url | prepend: site.baseurl }}">
         <h2 class="post-title">
@@ -27,6 +28,7 @@ description: "记录我的所思所想"
     </p>
 </div>
 <hr>
+{% endif %}
 {% endfor %}
 
 <!-- Pager -->
