@@ -104,6 +104,9 @@ bookmarks: [
     },{
         title: "Awesome Service Mesh",
         href: "https://servicemesh.gitbooks.io/awesome-servicemesh/"
+    },{
+        title: "Image Compression",
+        href: "https://tinypng.com/"
     }
 ]
 
