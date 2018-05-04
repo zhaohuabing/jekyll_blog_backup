@@ -59,6 +59,17 @@ layout: default
                     {% endfor %}
                 </ul>
                 {% endif %}
+                
+                <!-- Friends Blog -->
+                {% if site.bookmarks %}
+                <hr>
+                <h5>BOOKMARKS</h5>
+                <ul class="list-inline">
+                    {% for bookmark in site.bookmarks %}
+                        <li><a href="{{bookmark.href}}">{{bookmark.title}}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div>
         {% else %}
 
@@ -203,6 +214,18 @@ layout: default
                     {% endfor %}
                 </ul>
                 {% endif %}
+                
+                 <!-- Bookmarks -->
+                {% if site.bookmarks %}
+                <hr>
+                <h5>BOOKMARKS</h5>
+                <ul class="list-inline">
+                    {% for bookmark in site.bookmarks %}
+                        <li><a href="{{bookmark.href}}">{{bookmark.title}}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
     		</div>
         {% endif %}
 	</div>

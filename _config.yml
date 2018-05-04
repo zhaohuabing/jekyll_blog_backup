@@ -86,6 +86,17 @@ friends: [
     {
         title: "Linda的博客",
         href: "https://zhaozhihan.com"
+    }
+]
+
+# Friends
+bookmarks: [
+    {
+        title: "Martin Fowler",
+        href: "https://martinfowler.com"
+    },{
+        title: "Safari Books Online",
+        href: "https://www.safaribooksonline.com"
     },{
     
         title: "ServiceMesh中文网",
