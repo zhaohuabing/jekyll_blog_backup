@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "2018五一甘堡藏寨，九龙湖自驾游记"
-subtitle:   ""
+title:      "川西秘境探险"
+subtitle:   "2018五一甘堡藏寨，九龙湖自驾游记"
 date:       2018-05-01 21:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-01-may-day-jiulonghu/snowmountain.jpg"
