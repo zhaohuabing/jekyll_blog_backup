@@ -13,8 +13,7 @@ tags:
     - Bitcoin
 ---
 
->
-This series of articles are my notes of "Bitcoin and Cryptocurrency Technologies" online course.
+> This series of articles are my notes of "Bitcoin and Cryptocurrency Technologies" online course.
 
 ## How do I get into this?
 
