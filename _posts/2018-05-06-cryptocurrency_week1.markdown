@@ -6,7 +6,7 @@ description: ""
 date:       2018-05-06 22:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-06-cryptocurrency_week1/video_wuc.jpg"
-published: hide
+published: true
 tags:
     - Cryptocurrency
     - Blockchain
