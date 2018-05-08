@@ -13,6 +13,7 @@ tags:
     - 微服务
     - 云原生
     - Load Balancer
+category: [ tech ]
 ---
 
 ## 目录

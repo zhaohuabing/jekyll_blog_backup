@@ -8,7 +8,8 @@ header-img: "img/in-post/2018-05-01-may-day-jiulonghu/snowmountain.jpg"
 published: true
 hide-in-home: true
 tags:
-    - life
+    - Travel
+category: [ life ]
 ---
 ## 寻浮云牧场不遇
 五一节前的一周内，几个朋友就纷纷坐不住了，一个二个不再安心上班，开始在微信群里讨论过节要到哪里耍。

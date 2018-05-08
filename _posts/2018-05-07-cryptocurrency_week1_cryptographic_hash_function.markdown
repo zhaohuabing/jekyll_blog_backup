@@ -10,6 +10,7 @@ tags:
     - Cryptocurrency
     - Blockchain
     - Bitcoin
+category: [ note ]
 ---
 
 > This series of articles are my notes of "Bitcoin and Cryptocurrency Technologies" online course.

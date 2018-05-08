@@ -9,6 +9,7 @@ header-img: ""
 published: true
 tags:
     - 脚本
+category: [ tech ]
 ---
 
 * 目录

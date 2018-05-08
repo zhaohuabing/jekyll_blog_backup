@@ -10,6 +10,7 @@ published: true
 tags:
     - Kubernetes
     - Helm
+category: [ tech ]
 ---
 
 ## 目录

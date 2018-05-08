@@ -11,6 +11,7 @@ tags:
     - Kubernetes
     - Helm
     - Istio
+category: [ tech ]
 ---
 
 ## 目录

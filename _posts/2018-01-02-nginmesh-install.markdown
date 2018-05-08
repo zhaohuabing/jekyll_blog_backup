@@ -11,6 +11,7 @@ tags:
     - Kubernetes
     - service Mesh
     - nginmesh
+category: [ tech ]
 ---
 
 ## 目录
