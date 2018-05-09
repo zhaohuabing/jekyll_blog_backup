@@ -17,7 +17,7 @@ category: [ note ]
 Cryptographic hash function
 
 ## Hash function
-A mathematical function: hash(input string)=Output
+A mathematical function: hash(input string)=output
 
 * input: any string
 * output: a fix-size bit(Bitcoin uses 256)
@@ -28,7 +28,7 @@ A hash function which is used for cryptographic purposes should have these prope
 
 ### collision free
 
-: It's impossible to find two inputs which can produce the same outputs. 
+It's impossible to find two inputs which can produce the same outputs. 
 
  the collision does exist because the inputs can be any data and the outputs are only 2 to 256 possibilities. 
 
