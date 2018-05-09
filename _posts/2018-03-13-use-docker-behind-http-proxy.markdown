@@ -10,6 +10,7 @@ published: true
 tags:
     - Tips
     - Docker
+category: [ note ]
 ---
 ## 设置docker使用http proxy
 ```
