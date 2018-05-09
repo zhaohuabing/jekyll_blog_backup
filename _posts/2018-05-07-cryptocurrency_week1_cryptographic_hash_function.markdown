@@ -30,7 +30,7 @@ A hash function which is used for cryptographic purposes should have these prope
 
 It's impossible to find two inputs which can produce the same outputs. 
 
- the collision does exist because the inputs can be any data and the outputs are only 2 to 256 possibilities. 
+The collision does exist because the inputs can be any data and the outputs are only 2 to 256 possibilities. 
 
 But for a good hash function, it's just impossible to find them in an acceptable time frame even use all the computers to solve this together on the earth.
 
@@ -44,5 +44,5 @@ The problem is that if there are only a few values of inputs, it will be very ea
 
 Solution: concatenate input with a random r which is chosen from a highly spread out distribution.  Hash(input|r). Now it's infeasible to figure out what input is by traversing all the values because there're too many possibilities.
 
- R is used to hide the input, by using r, the Hash function can hide the input while exposing the output.
+Ris used to hide the input, by using r, the Hash function can hide the input while exposing the output.
 
