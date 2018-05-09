@@ -42,7 +42,7 @@ We want a hash function that It's infeasible to find out the input throughout th
 
 The problem is that if there are only a few values of inputs, it will be very easy to figure out what the input is by the output by simply trying all the possible values of inputs and see if they match the output.
 
-Solution: concatenate input with a random r which is chosen from a highly spread out distribution.  Hash(input|r). Now it's infeasible to figure out what input is by traversing all the values because there're too many possibilities.
+Solution: concatenate input with a random r which is chosen from a highly spread out distribution.  Hash(input\|r). Now it's infeasible to figure out what input is by traversing all the values because there're too many possibilities.
 
 Ris used to hide the input, by using r, the Hash function can hide the input while exposing the output.
 
