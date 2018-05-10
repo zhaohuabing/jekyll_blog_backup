@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Lecture Notes: Bitcoin and Cryptocurrency Technologies-Week 1"
+title:      "Bitcoin and Cryptocurrency Technologies-Week 1"
 subtitle:   "Introduction to crypto and cryptocurrencies"
 date:       2018-05-06 22:00:00
 author:     "赵化冰"
