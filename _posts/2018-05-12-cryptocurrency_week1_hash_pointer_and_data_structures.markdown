@@ -28,7 +28,7 @@ Hash Pointer is comprised of two parts:
 * Cryptographic hash of that information    
 The pointer can be used to get the information, the hash can be used to verify that information hasn't been changed  
 
-```
+<pre>
                            Hash Pointer
 +----------------+      +----------------+
 |                |   +--+Pointer of Data |
@@ -41,7 +41,7 @@ The pointer can be used to get the information, the hash can be used to verify t
 |                |
 |                |
 +----------------+
-```
+</pre>
 
 ## Build Data Structures with Hash Pointers
 ### Blockchain
