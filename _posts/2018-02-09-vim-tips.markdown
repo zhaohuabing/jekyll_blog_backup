@@ -37,3 +37,27 @@ category: [ note ]
 ## Enable Vim mode in bash
 vi ~/.inputrc
 set editing-mode vi
+
+## Enable system clipboard upport
+
+See if system clipboard is supported:     
+```
+$ vim --version | grep clipboard
+-clipboard       +iconv           +path_extra      -toolbar
++eval            +mouse_dec       +startuptime     -xterm_clipboard
+```
+
+Rinstall vim as vim-gnome:   
+```
+sudo apt-get install vim-gnome
+```
+Select what you want using the mouse - then type to copy to clipboard:  
+```
+"+y
+```
+
+To paste to vim from clipboard type:  
+```
+"+p
+```
+

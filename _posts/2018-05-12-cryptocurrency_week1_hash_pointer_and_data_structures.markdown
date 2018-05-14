@@ -61,4 +61,5 @@ To verify a data block, we only need to traverse the path from the top to the le
 If Merkel tree is sorted, we can prove a given data is not in the tree: if the data before and after the given data are both in the tree and they're consecutive, so there's no space between them, this proves that the given data is not in three.
 
 ## Example Codes on GitHub
-[Sample codes of blockchain and Merkle tree](https://github.com/zhaohuabing/cryptocurrency/tree/master/week1/data_structure)
+* [Blockchain Implementation in Java](https://github.com/zhaohuabing/blockchain)
+* [Merkle Tree Implementation in Java](https://github.com/zhaohuabing/merkle-tree)
