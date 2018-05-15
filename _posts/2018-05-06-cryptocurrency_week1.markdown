@@ -16,7 +16,8 @@ category: [ note ]
 > This series of articles are my notes of "Bitcoin and Cryptocurrency Technologies" online course.
 
 ## Lecture Notes
-[Cryptographic Hash Function]({{ site.baseurl }}{% post_url 2018-05-07-cryptocurrency_week1_cryptographic_hash_function %})
+[Cryptographic Hash Function]({{ site.baseurl }}{% post_url 2018-05-07-cryptocurrency_week1_cryptographic_hash_function %})    
+[Hash Pointer and Data Structures]({{ site.baseurl }}{% post_url 2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures %})
 
 ## How did I get into this?
 I have noticed the buzzwords “Bitcoin” and “Blockchain” for a while. There are lots of articles, news, and talks around them. It seems that many people believe that cryptocurrency is the future of online payment, some even claim that blockchain would become the fundamental technology of the next generation of the Internet.

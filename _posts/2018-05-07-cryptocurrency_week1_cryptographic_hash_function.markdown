@@ -145,7 +145,7 @@ As the table above illustrates, different salt values will create completely dif
 
 A hash function H is said to be puzzle-friendly if:  
 Given an R which is chosen from a highly spread-out distribution and a target set Y.  
-Try to find a solution X such that *H(R\|X) $$\in$$ Y.  
+Try to find a solution X such that *H(R\|X) $$\in$$ Y*.  
 There is no solving strategy to find X much better than just trying every possible value of X.
 
 **Usage:** 
