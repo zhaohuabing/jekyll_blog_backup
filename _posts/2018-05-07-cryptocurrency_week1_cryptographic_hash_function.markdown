@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Bitcoin and Cryptocurrency Technologies-Week 1"
-subtitle:   "Cryptographic Hash Function"
+title:      "Cryptographic Hash Function"
+subtitle:   "Bitcoin and Cryptocurrency Technologies-Week 1"
 date:       2018-05-09 22:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-06-cryptocurrency_week1/bitcoin_header.jpg"

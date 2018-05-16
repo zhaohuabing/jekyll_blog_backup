@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Bitcoin and Cryptocurrency Technologies-Week 1"
-subtitle:   "Introduction to crypto and cryptocurrencies"
+title:      "Introduction to crypto and cryptocurrencies"
+subtitle:   "Bitcoin and Cryptocurrency Technologies-Week 1"
 date:       2018-05-06 22:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-06-cryptocurrency_week1/bitcoin_header.jpg"
