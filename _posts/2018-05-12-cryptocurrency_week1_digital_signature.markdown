@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Digital Signature"
+title:      "Digital Signature and Public Key as Identities"
 subtitle:   "Bitcoin and Cryptocurrency Technologies-Week 1"
 date:       2018-05-15 20:00:00
 author:     "赵化冰"
@@ -52,15 +52,6 @@ Like I mentioned before, we usually sign the hash of the message, so the verify 
 **isValid := isEqual(decrypt(pk, hash(message)), signature)** 
 ![digital signature](\img\in-post\2018-05-12-cryptocurrency_week1_digital_signature\digital-signatures.jpg)
 
-### The Trust Issue of the Public Key 
-How can we make sure the public key we received has not been modified by a middleman or it is not forged by an attacker?    
-To solve the trust issue in the public key publishing process, we use the digital certificate, which is a document consists of a public key, user identity and a signature of a trusted authority. The public key of the trusted authority has already been planted into operating systems or browsers, it's called root certificate.
-
-Obtain a digital certifacte from an authority
-![digital certification](\img\in-post\2018-05-12-cryptocurrency_week1_digital_signature\digital-certificate.png)    
-Verify a digital signature using a certificate issued by an authority    
-![digital certification](\img\in-post\2018-05-12-cryptocurrency_week1_digital_signature\verify-signature.jpg)    
-
 ## Use Digital Signature with Cryptocurrency
 Signing a hash pointer is identical to signing the whole structure of the data in the hash pointer points to.    
 * Sign the head hash pointer of a blockchain(LinkedList) is identical to sign all the transaction data in the blockchain
@@ -69,5 +60,30 @@ Signing a hash pointer is identical to signing the whole structure of the data i
 Explanation:   
 Because modification of any part in the data structure will result inconsistent at the head/root, so as long as we have verified the digital signature of the head/root, we can know for sure that the whole structure can't be forged because no one can create a fake data structure with the same head/root.
 
+## Public Key as Identities
+
+Because only the owner of the public key knowns the matching private key, so only the owner can send out a message signed with that private key.    
+
+If we can verify the signature of a message with a public key，we can be sure that message has been sent out on behalf of the person behind of that public key，in other word，the public key is an identity of that person.
+
+There are two kinds of identities
+### Certificated Identities
+ In some cases, such as signing a business contract or sending an email, you need to let the other side know who you are and able to verify your true identity, such as your name, your organization, so they can trust you when doing business with you.
+
+But how can people make sure the public key they received is the original one it is claimed to be? How can people know that the public key has not been modified by a middleman or it is not forged by an attacker?    
+
+To solve this kind of trust issues in the public key publishing process, we introduced the digital certificate, which is a document consists of a public key, user identity and a signature of a trusted authority. The public key of the trusted authority has already been planted into operating systems or browsers, it's called root certificate.
+
+Obtain a digital certifacte from an authority
+![digital certification](\img\in-post\2018-05-12-cryptocurrency_week1_digital_signature\digital-certificate.png)    
+Verify a digital signature using a certificate issued by an authority    
+![digital certification](\img\in-post\2018-05-12-cryptocurrency_week1_digital_signature\verify-signature.jpg)
+ 
+###  Anonymous Identities
+Sometimes, you may want to keep anonymous, in that case, you just publish your public key without a certification. One example is the identiy in Bitcoin, you might not want to let others known how many money you have, especially you have a lot and prefer to keep a low profile.   
+  
+Even without certification, you can still use that anonymous identity(the public key) to do business with others as long as the people don't care who exactly you are.    
+
 ## Example Codes on GitHub
 * [Digital Signature example in Java](https://github.com/zhaohuabing/digital-signature)
+
