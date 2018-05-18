@@ -8,8 +8,8 @@ author:     "赵化冰"
 header-img: ""
 published: true
 tags:
-    - 脚本
-category: [ tech ]
+    - Tips
+category: [ tips ]
 ---
 
 * 目录

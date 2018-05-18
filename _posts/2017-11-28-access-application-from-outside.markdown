@@ -9,10 +9,6 @@ header-img: "img/post-bg-2015.jpg"
 published: true
 tags:
     - Kubernetes
-    - Ingress
-    - 微服务
-    - 云原生
-    - Load Balancer
 category: [ tech ]
 ---
 

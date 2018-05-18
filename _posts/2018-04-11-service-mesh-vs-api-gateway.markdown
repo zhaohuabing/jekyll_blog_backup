@@ -11,9 +11,6 @@ tags:
     - Microservice
     - Service Mesh
     - API Gateway
-    - 服务网格
-    - 微服务
-    - API 网关
 category: [ tech ]
 ---
 

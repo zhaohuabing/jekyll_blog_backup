@@ -7,13 +7,7 @@ date:       2017-11-07 15:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-traffic-shifting/crossroads.png"
 tags:
-    - Microservice
     - Istio
-    - Service Mesh
-    - Cloud Native
-    - 服务网格
-    - 微服务
-    - 云原生
 category: [ tech ]    
 ---
 

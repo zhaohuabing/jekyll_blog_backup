@@ -10,7 +10,7 @@ published: true
 tags:
     - Tips
     - Vim
-category: [ note ]
+category: [ tips ]
 ---
 ## vim graphical cheat sheet
 
@@ -60,4 +60,6 @@ To paste to vim from clipboard type:
 ```
 "+p
 ```
-
+## Others
+* Ex: open the current directory
+* set number: show line number

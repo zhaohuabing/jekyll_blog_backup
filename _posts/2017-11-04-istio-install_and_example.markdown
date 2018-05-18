@@ -7,15 +7,7 @@ date:       2017-11-04 14:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
 tags:
-    - Microservice
     - Istio
-    - Service Mesh
-    - Kubernetes
-    - Rancher
-    - Cloud Native
-    - 服务网格
-    - 微服务    
-    - 云原生
 category: [ tech ]
 ---
 

@@ -8,7 +8,7 @@ author:     "赵化冰"
 header-img: "img/post-bg-2015.jpg"
 published: true
 tags:
-    - Kubernetes
+    - Istio 
     - service Mesh
     - nginmesh
 category: [ tech ]

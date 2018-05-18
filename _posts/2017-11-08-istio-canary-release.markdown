@@ -8,14 +8,7 @@ author:     "赵化冰"
 header-img: "img/in-post/istio-canary-release/canary_bg.jpg"
 published: true
 tags:
-    - Microservice
     - Istio
-    - Service Mesh
-    - Cloud Native
-    - 服务网格
-    - 微服务
-    - 云原生
-    - 灰度发布
 category: [ tech ]
 ---
 

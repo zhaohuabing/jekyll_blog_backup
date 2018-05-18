@@ -10,7 +10,7 @@ published: true
 tags:
     - Tips
     - Docker
-category: [ tech ]
+category: [ tips ]
 ---
 
 ### Add the docker group if it doesn't already exist:

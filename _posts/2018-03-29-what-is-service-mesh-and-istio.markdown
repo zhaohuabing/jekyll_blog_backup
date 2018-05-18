@@ -10,7 +10,6 @@ published: true
 tags:
     - Microservice
     - Service Mesh
-    - 服务网格
     - Istio
 ---
 

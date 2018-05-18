@@ -10,7 +10,7 @@ published: true
 tags:
     - Tips
     - Docker
-category: [ note ]
+category: [ tips ]
 ---
 ## Ubuntu
 ### 设置docker使用http proxy
