@@ -25,7 +25,7 @@ export HTTPS_PROXY="http://127.0.0.1:3128/"
 
 ### 加载配置并重启docker
 ```
-sudo service docker start
+sudo service docker restart
 ```
 ## CentOS
 ### 设置docker使用http proxy
