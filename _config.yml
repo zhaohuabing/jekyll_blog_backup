@@ -71,7 +71,7 @@ ga_domain: zhaohuabing.com
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "程序员，开源爱好者，生活探险家。"
+sidebar-about-description: "Software Developer, Open Source Enthusiast and Life Adventurer"
 sidebar-avatar: /img/avatar-zhaohuabing.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
@@ -115,3 +115,7 @@ lean_cloud :
 
 plugins:
   - jekyll-sitemap
+
+algolia:
+    application_id: WM4BEY1UDN
+    index_name: blog
