@@ -22,7 +22,7 @@ export https_proxy="http://127.0.0.1:3128/"
 export HTTP_PROXY="http://127.0.0.1:3128/"
 export HTTPS_PROXY="http://127.0.0.1:3128/"
 ```
-
+<!--more-->
 ### 加载配置并重启docker
 ```
 sudo service docker restart

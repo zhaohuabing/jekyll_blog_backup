@@ -3,6 +3,7 @@ layout:     post
 title:      "采用Istio实现灰度发布(金丝雀发布)"
 subtitle:   "用户无感知的平滑业务升级"
 description: "当应用上线以后，运维面临的一大挑战是如何能在不影响已上线业务的情况下进行升级。本文将介绍如何使用Istio实现应用的灰度发布（金丝雀发布）"
+excerpt: "当应用上线以后，运维面临的一大挑战是如何能在不影响已上线业务的情况下进行升级。本文将介绍如何使用Istio实现应用的灰度发布（金丝雀发布）"
 date:       2017-11-08 15:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-canary-release/canary_bg.jpg"

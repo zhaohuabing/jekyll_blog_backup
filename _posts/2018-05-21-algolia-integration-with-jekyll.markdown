@@ -5,7 +5,7 @@ subtitle:   ""
 date:       2018-05-21 11:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-06-cryptocurrency_week1/bitcoin_header.jpg"
-published: hide 
+published: true 
 tags:
     - Jekyll:q 
     - Bitcoin
@@ -25,6 +25,7 @@ category: [ note ]
 Scrooge Coin programming assignment is a little bit tricky, the video of this lesson hasn't explained some implementation details. To help you understand the transaction data structure used in Scrooge Coin, I draw this diagram:
 ![Scrooge Coin](\img\in-post\2018-5-20-cryptocurrency_week1_scroogecoin\scroogecoin.png)
 
+<!--more-->
 Every transaction has a set of inputs and a set of outputs. An input in a transaction must use a hash pointer to refer to its corresponding output in the previous transaction, and it must be signed with the private key of the owner because the owner needs to prove he/she agrees to spend his/her coins.  
 
 Every output is correlated to the public key of the receiver, which is his/her ScroogeCoin address. 

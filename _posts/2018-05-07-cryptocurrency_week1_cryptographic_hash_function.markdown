@@ -27,6 +27,7 @@ Hash function is a mathematical function:*H(X)=Y*
 * H:  A hash function which takes an input value and calculates an output value
 * X: Input of the hash function, it could be any data of any length
 * Y: Output of the hash function: a fix-size bit(, it can be 256, 384, 516 ..., Bitcoin uses 256)
+<!--more-->
 
 ## Cryptographic Properties
 

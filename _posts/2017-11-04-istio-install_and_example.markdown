@@ -3,6 +3,7 @@ layout:     post
 title:      "Istio及Bookinfo示例程序安装试用笔记"
 subtitle:   "手把手教你从零搭建Istio及Bookinfo示例程序"
 description: "Istio是来自Google，IBM和Lyft的一个Service Mesh（服务网格）开源项目，是Google继Kubernetes之后的又一大作,本文将演示如何从裸机开始从零搭建Istio及Bookinfo示例程序。"
+excerpt: "Istio是来自Google，IBM和Lyft的一个Service Mesh（服务网格）开源项目，是Google继Kubernetes之后的又一大作,本文将演示如何从裸机开始从零搭建Istio及Bookinfo示例程序。"
 date:       2017-11-04 14:00:00
 author:     "赵化冰"
 header-img: "img/in-post/istio-install_and_example/post-bg.jpg"
@@ -23,6 +24,7 @@ category: [ tech ]
 
 服务网格将服务间通讯以及与此相关的管理控制功能从业务程序中下移到一个基础设施层，从而彻底隔离了业务逻辑和服务通讯两个关注点。采用服务网格后，应用开发者只需要关注并实现应用业务逻辑。服务之间的通信，包括服务发现，通讯的可靠性，通讯的安全性，服务路由等由服务网格层进行处理，并对应用程序透明。
 
+<!--more-->
 让我们来回顾一下微服务架构的发展过程。在出现服务网格之前，我们在微服务应用程序进程内处理服务通讯逻辑，包括服务发现，熔断，重试，超时等逻辑，如下图所示：  
 ![](/img/in-post/istio-install_and_example/5-a.png)  
 通过对这部分负责服务通讯的逻辑进行抽象和归纳，可以形成一个代码库供应用程序调用。但应用程序还是需要处理和各种语言代码库的调用细节，并且各种代码库互不兼容，导致对应用程序使用的语言和代码框架有较大限制。

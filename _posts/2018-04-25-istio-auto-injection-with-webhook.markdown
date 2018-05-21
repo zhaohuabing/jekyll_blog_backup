@@ -26,7 +26,7 @@ category: [ tech ]
 Kubernets 1.9版本引入了Admission Webhook扩展机制，通过Webhook,开发者可以对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。
 
 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-
+<!--more-->
 ## 什么是Admission
 Admission是Kubernets中的一个概念，指的是API Server处理资源请求的一个阶段。如下图所示，Admission对应到请求通过鉴权之后，资源被保存到etcd之前的这段流程。 
 ![](\img\in-post\2018-4-25-istio-auto-injection-with-webhook\admission-phase.png)

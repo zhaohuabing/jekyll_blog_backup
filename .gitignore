@@ -8,3 +8,5 @@ node_modules
 *.sh
 _site
 .jekyll-metadata
+_algolia_api_key
+*.log

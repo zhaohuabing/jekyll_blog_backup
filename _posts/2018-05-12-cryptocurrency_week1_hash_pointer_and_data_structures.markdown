@@ -28,6 +28,7 @@ Hash Pointer is comprised of two parts:
 * Cryptographic hash of that information    
 The pointer can be used to get the information, the hash can be used to verify that information hasn't been changed    
 ![hashpointer](\img\in-post\2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures\hashpointet.png)
+<!--more-->
 
 ## Data Structures Built with Hash Pointers
 

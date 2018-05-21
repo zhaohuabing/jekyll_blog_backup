@@ -17,6 +17,7 @@ category: [ note ]
 
 ## How did I get into this?
 I have noticed the buzzwords “Bitcoin” and “Blockchain” for a while. There are lots of articles, news, and talks around them. It seems that many people believe that cryptocurrency is the future of online payment, some even claim that blockchain would become the fundamental technology of the next generation of the Internet.
+<!--more-->
 
 Given its popularity, I can’t help thinking that should I also invest in it? Maybe investing money in Bitcoin or other cryptocurrencies is too risky now, but at least I could try to learn the technologies behind these. So one day I could use this knowledge to help me estimate a potential cryptocurrency investment opportunity, or maybe find a job :-)
 

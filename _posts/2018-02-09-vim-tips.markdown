@@ -15,7 +15,7 @@ category: [ tips ]
 ## vim graphical cheat sheet
 
 ![](/img/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg)
-
+<!--more-->
 ## Vim Jumps
 
 * ^ — Move to start of line

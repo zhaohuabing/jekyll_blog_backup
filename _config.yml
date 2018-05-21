@@ -119,3 +119,5 @@ plugins:
 algolia:
     application_id: WM4BEY1UDN
     index_name: blog
+
+excerpt_separator: <!--more--> 

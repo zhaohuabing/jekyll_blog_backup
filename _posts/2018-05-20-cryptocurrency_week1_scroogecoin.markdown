@@ -25,6 +25,7 @@ Finally, I got to the most exciting part of week 1 lectures-the programming assi
  
 I'm supposed to submit the assignment earlier because it was due a few weeks ago, however, I'd like to keep my pace relatively slow. I can't invest my full time to this course because I have a job to do, so I only take this course in my spare time. I also would like to digest all the information in one lesson before moving on to the next. Some fundamental technologies such as hash function, hash pointer, blockchain, Merkel tree and digital signature have been well-explained in week 1 lectures. In order to better understand these technologies, I also did some searches and programming practices, which can be found in my previous posts.  
 
+<!--more-->
 It turns out that writing posts on my blog is a better way to learn, I have to fully understand the lessons before I can explain them in my posts.
 
 ## Scrooge Coin Transaction

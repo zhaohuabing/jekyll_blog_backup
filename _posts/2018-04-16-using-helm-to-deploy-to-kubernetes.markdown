@@ -3,6 +3,7 @@ layout:     post
 title:      "Helm介绍"
 subtitle:   "强大的Kubernetes包管理工具"
 description: "Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。"
+excerpt: "Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。"
 date:       2018-04-16 15:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/buffalo.jpg"
