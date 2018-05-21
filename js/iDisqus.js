@@ -478,13 +478,13 @@
     iDisqus.prototype.disqus = function(){
         var _ = this;
         var _tip = _.dom.querySelector('.loading-container').dataset.tip;
-        if(_.opts.site != location.origin){
+        //if(_.opts.site != location.origin){
             //console.log('本地环境不加载 Disqus 评论框！');
-            if( _.opts.mode == 1 ){
-                _.getlist();
-            }
-            return;
-        }
+        //    if( _.opts.mode == 1 ){
+        //        _.getlist();
+        //    }
+        //    return;
+        //}
         if(!_.stat.disqusLoaded ){
             _tip = '尝试连接 Disqus……';
 
