@@ -21,15 +21,17 @@ category: [ note ]
 * Table of Content
 {:toc}
 
-Finally, I got to the most exciting part of week 1 lectures-the programming assignment!     
-The assignment was due a few weeks ago. I'm supposed to submit it earlier, however, I'd like to keep my pace.      
-Some fundamental technologies such as hash function, hash pointer, blockchain, Merkel tree and digital signature have been well-explained in week 1 lectures. In order to better understand these technologies, I also did some searches and programming practices, which can be found in my previous posts.
+Finally, I got to the most exciting part of week 1 lectures-the programming assignment!
+ 
+I'm supposed to submit the assignment earlier because it was due a few weeks ago, however, I'd like to keep my pace relatively slow. I can't invest my full time to this course because I have a job to do, so I only take this course in my spare time. I also would like to digest all the information in one lesson before moving on to the next. Some fundamental technologies such as hash function, hash pointer, blockchain, Merkel tree and digital signature have been well-explained in week 1 lectures. In order to better understand these technologies, I also did some searches and programming practices, which can be found in my previous posts.  
+
+It turns out that writing posts on my blog is a better way to learn, I have to fully understand the lessons before I can explain them in my posts.
 
 ## Scrooge Coin Transaction
 Scrooge Coin programming assignment is a little bit tricky, the video of this lesson hasn't explained some implementation details. To help you understand the transaction data structure used in Scrooge Coin, I draw this diagram:
 ![Scrooge Coin](\img\in-post\2018-5-20-cryptocurrency_week1_scroogecoin\scroogecoin.png)
 
-Every transaction has a set of inputs and a set of outputs. An input in a transaction must refer to its corresponding output in the previous transaction, and it must be signed with the private key of the owner because the owner needs to prove he/she agrees to spend his/her coins.  
+Every transaction has a set of inputs and a set of outputs. An input in a transaction must use a hash pointer to refer to its corresponding output in the previous transaction, and it must be signed with the private key of the owner because the owner needs to prove he/she agrees to spend his/her coins.  
 
 Every output is correlated to the public key of the receiver, which is his/her ScroogeCoin address. 
 
