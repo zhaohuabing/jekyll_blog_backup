@@ -5,7 +5,6 @@ node_modules
 .DS_Store
 */.DS_Store
 */*/.DS_Store
-*.sh
 _site
 .jekyll-metadata
 _algolia_api_key
