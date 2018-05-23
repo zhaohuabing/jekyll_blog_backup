@@ -1,23 +1,36 @@
 ---
 layout:     post
-title:      "微服务安全系列-用户访问认证与鉴权"
-subtitle:   ""
-description: ""
-excerpt: ""
+title:      "微服务安全沉思录之一"
+subtitle:   "用户访问认证与鉴权"
+description: "这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。"
+excerpt: "这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。"
 date:       2018-05-22 08:00:00
 author:     "赵化冰"
-header-img: "img/in-post/istio-traffic-shifting/crossroads.png"
-published: false 
+header-img: "img/in-post/2018-05-22-user_authentication_authorization/background.jpg"
+published: true 
 tags:
-    - Istio
+    - Microservice
+    - Security 
 category: [ tech ]    
 ---
+
+> 这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清了在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。
+> 
+> 在这一系列文章里，我将尝试分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
 
 ## 目录
 {:.no_toc}
 
 * 目录
 {:toc}
+
+
+## 前言
+微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统的诸多复杂问题。其中一个挑战就是如何在微服务架构中实现一个灵活，安全，高效的认证和鉴权方案。
+
+相对于传统单体应用，微服务架构下的认证和鉴权涉及到场景更为复杂，涉及到用户访问微服务应用，第三方应用访问微服务应用，应用内多个微服务之间相互访问等多种场景，每种场景下的认证和鉴权方案都需要考虑到，以保证应用程序的安全性。本系列博文将就此问题进行一次比较完整的探讨。
+![微服务认证和鉴权涉及到的三种场景](\img\in-post\2018-02-03-authentication-and-authorization-of-microservice\auth-scenarios.png)
+<center>微服务认证和鉴权涉及到的三种场景</center>
 
 ## 用户认证和鉴权
 
@@ -97,14 +110,31 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 2. 如果请求中没有Token，Token过期或者Token验证非法，则拒绝用户请求。
 3. Security Service检查用户是否具有该操作权(可选，参见下一小节)
 4. 如果用户具有该操作权限，则把请求发送到后端的Business Service，否则拒绝用户请求
-![采用API Gateway实现微服务应用的SSO](image/api-gateway-sso.png)
+![采用API Gateway实现微服务应用的SSO](\img\in-post\2018-05-22-user_authentication_authorization\api-gateway-sso.png)
 <center>采用API Gateway和Token实现微服务应用的单点登录</center>
 
 ### 用户权限控制
 用户权限控制有两种做法，在API Gateway处统一处理，或者在各个微服务中单独处理。
 #### API Gateway处进行统一的权限控制
-客户端发送的HTTP请求中包含有请求的Resource及HTTP Method。如果系统遵循REST规范，以URI资源方式对访问对象进行建模，则API Gateway可以从请求中直接截取到访问的资源及需要进行的操作，然后调用Security Service进行权限判断，根据判断结果决定用户是否有权限对该资源进行操作，并转发到后端的Business Service。这种实现方式在API Gateway处统一处理鉴权逻辑，各个微服务不需要考虑用户鉴权，只需要处理业务逻辑，简化了各微服务的实现。
+客户端发送的HTTP请求中包含有请求的Resource及HTTP Method。如果系统遵循REST规范，以URI资源方式对访问对象进行建模，则API Gateway可以从请求中直接截取到访问的资源及需要进行的操作，然后调用Security Service进行权限判断，根据判断结果决定用户是否有权限对该资源进行操作，并转发到后端的Business Service。
+
+假设系统中有三个角色:
+* order_manager,可以查看，创建，修改，删除订单
+* order_editor, 可以查看，创建，修改订单
+* order_inspector，只能查看订单
+
+这些角色对资源的操作权限都可以映射到HTTP Verb上，如下表所示。
+
+| Role            | Resource | Verbs                              |
+|-----------------|----------|------------------------------------|
+| order_manager   | /orders  | 'GET'   'POST'   'PUT'   'DELETE'  |
+| order_editor    | /orders  | 'GET'    'POST'    'PUT'           |
+| order_inspector | /orders  | 'GET'                              |
+
+这种实现方式在API Gateway处统一处理鉴权逻辑，各个微服务不需要考虑用户鉴权，只需要处理业务逻辑，简化了各微服务的实现。
 #### 由各个微服务单独进行权限控制
-如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行更细粒度的权限控制，则需要在微服务中单独对用户权限进行判断和处理。这种情况下微服务的权限控制更为灵活，但各个微服务需要单独维护用户的授权数据，实现更复杂。由于微服务进行权限判断时需要用户身份信息，该方案需要处理的另一个问题是如何把登录用户的信息从API Gateway传递到微服务中。如果是基于Http，可以采用Http header实现，如果是其他协议，则需要在消息体中增加用户身份相关的字段。
+如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行更细粒度的权限控制，则需要在微服务中单独对用户权限进行判断和处理。这种情况下微服务的权限控制更为灵活，但各个微服务需要单独维护用户的授权数据，实现更复杂。
+
+由于微服务进行权限判断时需要用户身份信息，该方案需要处理的另一个问题是如何把登录用户的信息从API Gateway传递到微服务中。如果是基于Http，可以采用Http header实现，如果是其他协议，则需要在消息体中增加用户身份相关的字段。
 
 
