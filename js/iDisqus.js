@@ -596,9 +596,9 @@
             _.opts.api + '/getcomments.php?ident=' + _.opts.identifier + (!!_.stat.next ? '&cursor=' + _.stat.next : ''),
             function(resp){
                 var data = JSON.parse(resp);
-                if (!data.auth){
-                    alert('认证出错，请查看后端配置中，Disqus 帐号密码是否填写有误。');
-                }
+                //if (!data.auth){
+                //    alert('认证出错，请查看后端配置中，Disqus 帐号密码是否填写有误。');
+                //}
                 if (data.code === 0) {
                     _.stat.offsetTop = d.documentElement.scrollTop || d.body.scrollTop;
                     _.stat.thread = data.thread;
