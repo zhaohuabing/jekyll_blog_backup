@@ -41,12 +41,24 @@ Actually, It's the node first figure out the mathematical problem of Bitcoin
 * Nodes express their acceptance of  the block by including its hash in the next block they create, in another word, put the block in their local copy of the blockchain
 
 ## Potential attacks 
-* Malicious attackers try to steal other user's Bitcoin      
+### Steal other user's Bitcoin      
 It's impossible because attackers can't forge other user's signature, so he can't propose a valid transaction to transfer other user's coins to himself. It's the security feature of cryptographic technology Bitcoin depends on.
-* Denying Services    
+### Denying Services    
 The attacker rejects any transactions originate from a specific user. It's not a good attack because other honest nodes will propose these transactions.
-* Double spending 
-The attacker creates two transactions, which transfer the same coins to two different addresses. In theory, these two transactions have no difference from the technology point of view. Which one is valid is only a human moral judgement.  
-Solution: The rule of Bitcoin is that honest nodes always chose the longest valid branch and append the next block to that branch when there is more than one branch. So the more blocks are appended to the branch which your transaction is in, more likely this branch will be ultimately recognized by the Bitcoin network.  The suggested number is 6, so after 6 blocks have been appended to the block which your transaction is in, you can almost be sure this branch will not become an orphan branch in the future. So if you're selling something to someone，after receiving the payment by Bitcoin, you can wait until 6 more blocks are appended next to your block, then you complete this transaction and send the payer the product.
+### Double spending
+The attacker creates two transactions, which transfer the same coins to two different addresses. In theory, these two transactions have no difference from the technology point of view. Which one is valid is only a human moral judgement.
 
-Question: Does this mean to avoid the potential risk of double spending attack, we always have to wait about one hour to complete a transaction?
+Solution: The rule of Bitcoin is that honest nodes always chose the longest valid branch and append the next block to that branch when there is more than one branch. So the more blocks are appended to the branch which your transaction is in, more likely this branch will be ultimately recognized by the Bitcoin network.  
+
+The suggested number is 6, experience shows that after 6 blocks have been appended to the block which your transaction is in, you can almost be sure this branch will not become an orphan branch in the future. So if you're selling something to someone，after receiving the payment by Bitcoin, you can wait until 6 more blocks are appended next to your block, then you complete this transaction and send the payer the product.
+![Transfer Bitcoin](\img\in-post\2018-05-27-cryptocurrency_week2_distributed_consenus\double-spending-attack.png)
+> There is no guarantee that a transaction is in consensus branch, but we assume the probability is almost 100% after 6 confirmation.
+
+I'm wondering: Does this means to avoid the potential risk of double spending attack, we always have to wait about one hour to complete a transaction?
+
+It seems like that, more information can be found at these two links. I think it's a big issue for Bitcoin, an hour is too long compared with nearly real-time confirmation of a traditional "centralized bank transaction".
+
+![](\img\in-post\2018-05-27-cryptocurrency_week2_distributed_consenus\confirmation-time.png)
+
+* [How long does it take for a Bitcoin transaction to be confirmed?](https://coincenter.org/entry/how-long-does-it-take-for-a-bitcoin-transaction-to-be-confirmed)
+* [Average Confirmation Time of Bitcoin](https://blockchain.info/charts/avg-confirmation-time?timespan=30days)
