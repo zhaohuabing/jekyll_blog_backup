@@ -1,18 +1,19 @@
 ---
 layout:     post
+
 title:      "Distributed Consensus"
 subtitle:   "Bitcoin and Cryptocurrency Technologies-Week 2"
-date:        
-author:     "赵化冰"
+excerpt: "Distributed Consensus"
+date:       2018-05-26 14:00:00
+author:     "赵化冰"
 header-img: "img/in-post/2018-05-06-cryptocurrency_week1/bitcoin_header.jpg"
-published: true
+published: true 
 tags:
     - Cryptocurrency
     - Blockchain
     - Bitcoin
     - Digital Signature
 category: [ note ]
-
 ---
 
 > This series of articles are my notes of "Bitcoin and Cryptocurrency Technologies" online course.
@@ -25,7 +26,7 @@ category: [ note ]
 ## Decentralize ScroogeCoin: Distributed Consensus
 Bitcoin is a peer to peer network.   When Alice wants to pay Bob:    
 She broadcasts the transaction to all Bitcoin nodes 
-
+![Transfer Bitcoin](\img\in-post\2018-05-27-cryptocurrency_week2_distributed_consenus\bitcoin-network.png)
 The consensus of Bitcoin network:
 * The content of transactions
 * The order in which these transactions happened
