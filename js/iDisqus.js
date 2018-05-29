@@ -1,8 +1,9 @@
 /*!
- * v 0.1.23
+ * v 0.2.11
+ * 
  * https://github.com/fooleap/disqus-php-api
  *
- * Copyright 2017 fooleap
+ * Copyright 2017-2018 fooleap
  * Released under the MIT license
  */
 (function (global) {
@@ -31,6 +32,7 @@
             }
         }
         xhr.onerror = error;
+        xhr.withCredentials = true;
         xhr.send();
         return xhr;
     }
@@ -48,24 +50,12 @@
             }
         };
         xhr.onerror = error; 
+        xhr.withCredentials = true;
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.send(params);
         return xhr;
     }
     
-    function addListener(els, evt, func){
-        [].forEach.call(els, function(item){
-            item.addEventListener(evt, func, false);
-        });
-    }
-
-    function removeListener(els, evt, func){
-        [].forEach.call(els, function(item){
-            item.removeEventListener(evt, func, false);
-        });
-    }
-
-
     // matches & closest polyfill https://github.com/jonathantneal/closest
     (function (ElementProto) {
         if (typeof ElementProto.matches !== 'function') {
@@ -100,12 +90,14 @@
     })(window.Element.prototype);
 
     // 访客信息
-    var Guest = function () {
+    var User = function () {
         this.dom = arguments[0];
+        this.opts = arguments[1];
         this.init();
+        this.autologin();
     }
 
-    Guest.prototype = {
+    User.prototype = {
         // 初始化访客信息
         init: function(){
             var _ = this;
@@ -114,12 +106,15 @@
             _.email = l.getItem('email');
             _.url = l.getItem('url');
             _.avatar = l.getItem('avatar');
+            _.type = l.getItem('type');
             _.logged_in = l.getItem('logged_in');
 
             var boxarr = _.dom.getElementsByClassName('comment-box');
             if( _.logged_in == 'true' ) {
                 [].forEach.call(boxarr,function(item){
-                    item.querySelector('.comment-form-wrapper').classList.add('logged-in');
+                    if(_.type == '1'){
+                        item.querySelector('.comment-form-wrapper').classList.add('logged-in');
+                    }
                     item.querySelector('.comment-form-name').value = _.name;
                     item.querySelector('.comment-form-email').value = _.email;
                     item.querySelector('.comment-form-url').value = _.url;
@@ -128,31 +123,70 @@
             } else {
                 [].forEach.call(boxarr,function(item){
                     item.querySelector('.comment-form-wrapper').classList.remove('logged-in');
-                    item.querySelector('.comment-form-name').value = _.name;
-                    item.querySelector('.comment-form-email').value = _.email;
-                    item.querySelector('.comment-form-url').value = _.url;
-                    item.querySelector('.comment-avatar-image').src = !!_.avatar ? _.avatar : item.querySelector('.comment-avatar-image').src;
+                    item.querySelector('.comment-form-name').value = '';
+                    item.querySelector('.comment-form-email').value = '';
+                    item.querySelector('.comment-form-url').value = '';
+                    item.querySelector('.comment-avatar-image').src = _.dom.querySelector('.comment-avatar-image').dataset.avatar;
                 });
                 l.setItem('logged_in', 'false');
             }
         },
 
-        // 重置访客信息
-        reset: function(){
-            l.setItem('logged_in', 'false');
-            this.init();
+        // 自动登录
+        autologin: function(){
+            var _ = this;
+            getAjax( _.opts.api +'/user.php', function(resp){
+                var data = JSON.parse(resp);
+                if( data.code == 0 ){
+                    _.submit(data.response);
+                } else {
+                    if( _.type == '1' ){
+                        l.setItem('logged_in', 'false');
+                        _.init();
+                    }
+                }
+            }, function(){
+            })
+        },
+
+        // 登录
+        login: function(){
+
+            var _ = this;
+            var popup = window.open(_.opts.api+'/login.php', 'Disqus Oauth', 'width=470,height=508');
+            var timer;
+            function isLogged(){
+                if (!popup || !popup.closed) return;
+                clearInterval(timer);
+                _.user.autologin();
+            }
+            timer = setInterval(isLogged, 100);
+
+        },
+
+        // 退出登录
+        logout: function(){
+            var _ = this;
+            postAjax( _.opts.api + '/logout.php', {}, function(resp){
+                l.setItem('logged_in', 'false');
+                l.removeItem('type');
+                l.removeItem('email');
+                l.removeItem('avatar');
+                l.removeItem('name');
+                l.removeItem('url');
+                _.user.init();
+            })
         },
 
         // 提交访客信息
-        submit: function(g){
-            if( this.logged_in == 'false' ){
-                l.setItem('name', g.name);
-                l.setItem('email', g.email);
-                l.setItem('url', g.url);
-                l.setItem('avatar', g.avatar);
-                l.setItem('logged_in', 'true');
-                this.init();
-            }
+        submit: function(user){
+            l.setItem('email', user.email);
+            l.setItem('type', user.type);
+            l.setItem('name', user.name);
+            l.setItem('url', user.url);
+            l.setItem('avatar', user.avatar);
+            l.setItem('logged_in', 'true');
+            this.init();
         }
     }
 
@@ -163,7 +197,7 @@
         _.opts = typeof(arguments[1]) == 'object' ? arguments[1] : arguments[0];
         _.dom =  d.getElementById(typeof(arguments[0]) == 'string' ? arguments[0] : 'comment');
         _.opts.api = _.opts.api.slice(-1) == '/' ? _.opts.api.slice(0,-1) : _.opts.api;
-        _.opts.site = !!_.opts.site ? _.opts.site : location.origin;
+        _.opts.site = _.opts.site || location.origin;
         if(!!_.opts.url){
             var optsUrl = _.opts.url.replace(_.opts.site, '');
             _.opts.url = optsUrl.slice(0, 1) != '/' ? '/' + optsUrl : optsUrl;
@@ -172,19 +206,19 @@
         } else {
             _.opts.url = location.pathname + location.search;
         }
-        _.opts.identifier = !!_.opts.identifier ? _.opts.identifier : _.opts.url;
+        _.opts.identifier = _.opts.identifier || _.opts.url;
         _.opts.link = _.opts.site + _.opts.url; 
-        _.opts.title = !!_.opts.title ? _.opts.title : d.title;
+        _.opts.title = _.opts.title || d.title;
         _.opts.slug = !!_.opts.slug ? _.opts.slug.replace(/[^A-Za-z0-9_-]+/g,'') : '';
-        _.opts.desc =  !!_.opts.desc ? _.opts.desc : (!!d.querySelector('[name="description"]') ? d.querySelector('[name="description"]').content : '');
-        _.opts.mode = !!_.opts.mode ? _.opts.mode : 1;
-        _.opts.timeout = !!_.opts.timeout ? _.opts.timeout : 3000;
+        _.opts.desc =  _.opts.desc || (!!d.querySelector('[name="description"]') ? d.querySelector('[name="description"]').content : '');
+        _.opts.mode = _.opts.mode || 1;
+        _.opts.timeout = _.opts.timeout || 3000;
         _.opts.toggle = !!_.opts.toggle ? d.getElementById(_.opts.toggle) : null;
-        _.opts.badge = !!_.opts.badge ? _.opts.badge : '管理员';
+        _.opts.autoCreate = !!_.opts.autoCreate || !!_.opts.auto;
 
         // emoji 表情
-        _.opts.emoji_path = !!_.opts.emoji_path ? _.opts.emoji_path : 'https://assets-cdn.github.com/images/icons/emoji/unicode/';
-        _.emoji_list =!!_.opts.emoji_list ? _.opts.emoji_list : [{
+        _.opts.emojiPath = _.opts.emojiPath || _.opts.emoji_path || 'https://assets-cdn.github.com/images/icons/emoji/unicode/';
+        _.emojiList = _.opts.emojiList || _.opts.emoji_list || [{
             code:'smile',
             title:'笑脸',
             unicode:'1f604'
@@ -250,8 +284,8 @@
             unicode:'270c'
         }];
         
-        if(!!_.opts.emoji_preview){
-            getAjax(filepath +'/eac.min.json', function(resp){
+        if(!!_.opts.emoji_preview || !!_.opts.emojiPreview ){
+            getAjax(_.opts.api +'/eac.min.php', function(resp){
                 _.eac = JSON.parse(resp);
             }, function(){
             })
@@ -364,14 +398,14 @@
         }
         // 表情
         var emojiList = '';
-        _.emoji_list.forEach(function(item){
-            emojiList += '<li class="emojione-item" title="'+ item.title+'" data-code=":'+item.code+':"><img class="emojione-item-image" src="'+_.opts.emoji_path + item.unicode+'.png" /></li>';
+        _.emojiList.forEach(function(item){
+            emojiList += '<li class="emojione-item" title="'+ item.title+'" data-code=":'+item.code+':"><img class="emojione-item-image" src="'+_.opts.emojiPath + item.unicode+'.png" /></li>';
         })
         _.dom.innerHTML = '<div class="comment loading" id="idisqus">\n'+
             '    <div class="loading-container" data-tip="正在加载评论……"><svg class="loading-bg" width="72" height="72" viewBox="0 0 720 720" version="1.1" xmlns="http://www.w3.org/2000/svg"><path class="ring" fill="none" stroke="#9d9ea1" d="M 0 -260 A 260 260 0 1 1 -80 -260" transform="translate(400,400)" stroke-width="50" /><polygon transform="translate(305,20)" points="50,0 0,100 18,145 50,82 92,145 100,100" style="fill:#9d9ea1"/></svg></div>\n'+
             '    <div class="comment-header"><span class="comment-header-item" id="comment-count">评论</span><a target="_blank" class="comment-header-item" id="comment-link">Disqus 讨论区</a></div>\n'+
             '    <div class="comment-box">\n'+
-            '        <div class="comment-avatar avatar"><img class="comment-avatar-image" src="https://a.disquscdn.com/images/noavatar92.png"></div>\n'+
+            '        <div class="comment-avatar avatar"><img class="comment-avatar-image" src="//a.disquscdn.com/images/noavatar92.png" data-avatar="//a.disquscdn.com/images/noavatar92.png"></div>\n'+
             '        <div class="comment-form">\n'+
             '            <div class="comment-form-wrapper">\n'+
             '                <textarea class="comment-form-textarea" placeholder="加入讨论……"></textarea>\n'+
@@ -385,25 +419,31 @@
             '                <div class="comment-actions">\n'+
             '                    <div class="comment-actions-group">\n'+
             '                        <input id="emoji-input" class="comment-actions-input" type="checkbox"> \n'+
-            '                        <label class="comment-actions-label emojione" for="emoji-input" title="选择表情">\n'+
+            '                        <label class="comment-actions-label emojione" for="emoji-input">\n'+
             '                            <svg class="icon" fill="#c2c6cc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">\n'+
+            '                                <g>\n'+
+            '                                <title>选择表情</title>\n'+
             '                                <path d="M512 1024c-282.713043 0-512-229.286957-512-512s229.286957-512 512-512c282.713043 0 512 229.286957 512 512S792.486957 1024 512 1024zM512 44.521739c-258.226087 0-467.478261 209.252174-467.478261 467.478261 0 258.226087 209.252174 467.478261 467.478261 467.478261s467.478261-209.252174 467.478261-467.478261C979.478261 253.773913 768 44.521739 512 44.521739z"></path>\n'+
             '                                <path d="M801.391304 554.295652c0 160.278261-129.113043 289.391304-289.391304 289.391304s-289.391304-129.113043-289.391304-289.391304L801.391304 554.295652z"></path>\n'+
             '                                <path d="M674.504348 349.495652m-57.878261 0a2.6 2.6 0 1 0 115.756522 0 2.6 2.6 0 1 0-115.756522 0Z"></path>\n'+
             '                                <path d="M347.269565 349.495652m-57.878261 0a2.6 2.6 0 1 0 115.756522 0 2.6 2.6 0 1 0-115.756522 0Z"></path>\n'+
+            '                                </g>\n'+
             '                            </svg>\n'+
             '                            <ul class="emojione-list">'+emojiList+'</ul>\n'+
             '                        </label>\n'+
             '                        <input id="upload-input" class="comment-actions-input comment-image-input" type="file" accept="image/*" name="file"> \n'+
-            '                        <label class="comment-actions-label" for="upload-input" title="上传图片">\n'+
+            '                        <label class="comment-actions-label" for="upload-input">\n'+
             '                            <svg class="icon" fill="#c2c6cc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">\n'+
+            '                                <g>\n'+
+            '                                <title>上传图片</title>\n'+
             '                                <path d="M15.515152 15.515152 15.515152 15.515152 15.515152 15.515152Z"></path>\n'+
             '                                <path d="M15.515152 139.636364l0 806.787879 992.969697 0 0-806.787879-992.969697 0zM946.424242 884.363636l-868.848485 0 0-682.666667 868.848485 0 0 682.666667zM698.181818 356.848485c0-51.417212 41.673697-93.090909 93.090909-93.090909s93.090909 41.673697 93.090909 93.090909c0 51.417212-41.673697 93.090909-93.090909 93.090909s-93.090909-41.673697-93.090909-93.090909zM884.363636 822.30303l-744.727273 0 186.181818-496.484848 248.242424 310.30303 124.121212-93.090909z"></path>\n'+
+            '                                </g>\n'+
             '                            </svg>\n'+
             '                        </label>\n'+
             '                    </div>\n'+
             '                    <div class="comment-actions-form">\n'+
-            '                        <label class="comment-actions-label exit" title="重置访客信息">\n'+
+            '                        <label class="comment-actions-label exit" title="退出登录">\n'+
             '                            <svg class="icon" fill="#c2c6cc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48">\n'+
             '                                <path d="M348.870666 210.685443l378.570081 0c32.8205 0 58.683541 26.561959 58.683541 58.683541 0 162.043606 0 324.804551 0 486.848157 0 32.81129-26.561959 58.674331-58.683541 58.674331L348.870666 814.891472c-10.477632 0-18.850323-8.363482-18.850323-18.841114l0-37.728276c0-10.477632 8.372691-18.841114 18.850323-18.841114l343.645664 0c10.477632 0 18.850323-8.372691 18.850323-18.850323L711.366653 304.983109c0-10.477632-8.372691-18.841114-18.850323-18.841114L348.870666 286.141996c-10.477632 0-18.850323-8.363482-18.850323-18.841114l0-37.728276C329.98248 219.095997 338.393034 210.685443 348.870666 210.685443z"></path>\n'+
             '                                <path d="M128.152728 526.436804l112.450095 112.450095c6.985088 6.985088 19.567661 6.985088 26.552749 0l26.561959-26.561959c6.985088-6.985088 6.985088-19.567661 0-26.552749l-34.925441-34.925441L494.168889 550.84675c10.477632 0 18.850323-8.372691 18.850323-18.850323l0-37.719066c0-10.477632-8.372691-18.850323-18.850323-18.850323L258.754229 475.427036l34.925441-34.925441c6.985088-6.985088 6.985088-19.567661 0-26.552749l-26.561959-26.524097c-6.985088-6.985088-19.567661-6.985088-26.552749 0L128.152728 499.875868C120.431883 506.859933 120.431883 519.451716 128.152728 526.436804z"></path>\n'+
@@ -417,7 +457,7 @@
             '                    </div>\n'+
             '                </div>\n'+
             '            </div>\n'+
-            '            <div class="comment-login"><input class="comment-form-input comment-form-name" type="text" placeholder="名字（必填）" autocomplete="name"><input class="comment-form-input comment-form-email" type="email" placeholder="邮箱（必填）" autocomplete="email"><input class="comment-form-input comment-form-url" type="url" placeholder="网址（可选）" autocomplete="url"></div>\n'+
+            '            <div class="comment-form-user">'+ ( _.opts.mode != 1 ? '<div class="comment-form-auth"><button class="comment-form-login" title="使用 Disqus 帐号登录"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 200 200"><path fill="#2E9FFF" d="M102.535 167.5c-16.518 0-31.621-6.036-43.298-16.021L30.5 155.405l11.102-27.401A67.658 67.658 0 0 1 35.564 100c0-37.277 29.984-67.5 66.971-67.5 36.984 0 66.965 30.223 66.965 67.5 0 37.284-29.98 67.5-66.965 67.5zm36.567-67.693v-.188c0-19.478-13.736-33.367-37.42-33.367h-25.58v67.5h25.201c23.868.001 37.799-14.468 37.799-33.945zm-37.138 17.361h-7.482V82.841h7.482c10.989 0 18.283 6.265 18.283 17.07v.188c0 10.896-7.294 17.069-18.283 17.069z"/></svg></button></div><span> 或 </span>' : '' ) + '<div class="comment-form-guest"><input class="comment-form-input comment-form-name" type="text" name="name" placeholder="名字（必填）" autocomplete="name"><input class="comment-form-input comment-form-email" type="email" name="email" placeholder="邮箱（必填）" autocomplete="email"><input class="comment-form-input comment-form-url" type="url" name="url" placeholder="网址（可选）" autocomplete="url"></div></div>\n'+
             '        </div>\n'+
             '    </div>\n'+
             '    <ul id="comments" class="comment-list"></ul>\n'+
@@ -425,10 +465,11 @@
             '</div>\n'+
             '<div class="comment" id="disqus_thread"></div>';
 
-        _.guest = new Guest(_.dom);
+        _.user = new User(_.dom,_.opts);
         _.box = _.dom.querySelector('.comment-box').outerHTML.replace(/<label class="comment-actions-label exit"(.|\n)*<\/label>\n/,'').replace('comment-form-wrapper','comment-form-wrapper editing').replace(/加入讨论……/,'');
         _.handle = {
-            guestReset: _.guest.reset.bind(_.guest),
+            logout: _.user.logout.bind(_),
+            login: _.user.login.bind(_),
             loadMore: _.loadMore.bind(_),
             post: _.post.bind(_),
             postThread: _.postThread.bind(_),
@@ -479,7 +520,7 @@
         var _ = this;
         var _tip = _.dom.querySelector('.loading-container').dataset.tip;
         //if(_.opts.site != location.origin){
-            //console.log('本地环境不加载 Disqus 评论框！');
+        //    //console.log('本地环境不加载 Disqus 评论框！');
         //    if( _.opts.mode == 1 ){
         //        _.getlist();
         //    }
@@ -531,6 +572,39 @@
         }
     }
 
+    // 添加事件监听
+    iDisqus.prototype.addListener = function (els, evt, func){
+        var _ = this;
+        var el = _.dom.getElementsByClassName(els);
+        [].forEach.call(el, function(item){
+            item.addEventListener(evt, func, false);
+        });
+    }
+
+    // 移除事件监听
+    iDisqus.prototype.removeListener = function (els, evt, func){
+        var _ = this;
+        var el = _.dom.getElementsByClassName(els);
+        [].forEach.call(el, function(item){
+            item.removeEventListener(evt, func, false);
+        });
+    }
+
+    // 添加所有事件监听
+    iDisqus.prototype.addAllListeners = function (){
+        var _ = this;
+        _.addListener('exit', 'click', _.handle.logout);
+        _.addListener('comment-form-textarea', 'blur',  _.handle.focus);
+        _.addListener('comment-form-textarea', 'focus',  _.handle.focus);
+        _.addListener('comment-form-textarea', 'input',  _.handle.input);
+        _.addListener('comment-form-textarea', 'keyup',  _.handle.mention);
+        _.addListener('comment-form-email', 'blur',  _.handle.verify);
+        _.addListener('comment-form-submit', 'click',  _.handle.post);
+        _.addListener('comment-form-login', 'click',  _.handle.login);
+        _.addListener('comment-image-input', 'change',  _.handle.upload);
+        _.addListener('emojione-item', 'click', _.handle.field);
+    }
+
     // 评论计数
     iDisqus.prototype.count = function (){
         var _ = this;
@@ -547,8 +621,9 @@
                     var data  = JSON.parse(resp);
                     var posts = data.response;
                     posts.forEach(function(item){
-                        var link = item.link.replace(_.opts.site, '');
-                        var itemLink = link.slice(0, 1) != '/' ? '/' + link : link;
+                        var link = document.createElement('a');
+                        link.href = item.link;
+                        var itemLink = link.href.replace(link.origin, '');
                         var el = d.querySelector('[data-disqus-url$="'+itemLink+'"]')
                         if(!!el ){
                             el.innerHTML = item.posts;
@@ -592,17 +667,19 @@
         _.dom.querySelector('#idisqus').style.display = 'block';
         _.dom.querySelector('#disqus_thread').style.display = 'none';
         getAjax(
-            //_.opts.api + '/getcomments.php?link=' + _.opts.url + (!!_.stat.next ? '&cursor=' + _.stat.next : ''),
             _.opts.api + '/getcomments.php?ident=' + _.opts.identifier + (!!_.stat.next ? '&cursor=' + _.stat.next : ''),
             function(resp){
                 var data = JSON.parse(resp);
-                //if (!data.auth){
-                //    alert('认证出错，请查看后端配置中，Disqus 帐号密码是否填写有误。');
-                //}
                 if (data.code === 0) {
                     _.stat.offsetTop = d.documentElement.scrollTop || d.body.scrollTop;
                     _.stat.thread = data.thread;
                     _.stat.count = data.posts;
+                    _.opts.avatar = data.forum.avatar;
+                    _.dom.querySelector('.comment-avatar-image').dataset.avatar = data.forum.avatar;
+                    if( _.user.logged_in == 'false' ){
+                        _.dom.querySelector('.comment-avatar-image').src = data.forum.avatar;
+                    }
+                    _.opts.badge =  data.forum.moderatorBadgeText;
                     _.dom.querySelector('#idisqus').classList.remove('loading');
                     _.dom.querySelector('#comment-link').href = data.link;
                     _.dom.querySelector('#comment-count').innerHTML = _.stat.count + ' 条评论';
@@ -622,15 +699,7 @@
                         })
                     } else {
                         loadmore.addEventListener('click', _.handle.loadMore, false);
-                        _.dom.querySelector('.exit').addEventListener('click', _.handle.guestReset, false);
-                        _.dom.querySelector('.comment-form-textarea').addEventListener('blur', _.handle.focus, false);
-                        _.dom.querySelector('.comment-form-textarea').addEventListener('focus',_.handle.focus, false);
-                        _.dom.querySelector('.comment-form-textarea').addEventListener('input', _.handle.input, false);
-                        _.dom.querySelector('.comment-form-textarea').addEventListener('keyup', _.handle.mention, false);
-                        _.dom.querySelector('.comment-form-email').addEventListener('blur', _.handle.verify, false);
-                        _.dom.querySelector('.comment-form-submit').addEventListener('click', _.handle.post, false);
-                        _.dom.querySelector('.comment-image-input').addEventListener('change', _.handle.upload, false);
-                        addListener(_.dom.getElementsByClassName('emojione-item'), 'click', _.handle.field);
+                        _.addAllListeners();
                     }
                     if ( data.cursor.hasNext ){
                         _.stat.next = data.cursor.next;
@@ -647,11 +716,12 @@
 
                     _.timeAgo();
 
-                    if (/^#disqus|^#comment/.test(location.hash) && !data.cursor.hasPrev && !_.stat.disqusLoaded ) {
+                    if (/^#disqus|^#comment-/.test(location.hash) && !data.cursor.hasPrev && !_.stat.disqusLoaded && !_.stat.loaded) {
                         var el = _.dom.querySelector('#idisqus ' + location.hash)
-                        window.scrollBy(0, el.getBoundingClientRect().top);
+                        if( !!el ){
+                            window.scrollBy(0, el.getBoundingClientRect().top);
+                        }
                     }
-
                     _.stat.loading = false;
                     _.stat.loaded = true;
                 } else if ( data.code === 2 ){
@@ -690,9 +760,11 @@
         };
 
         var mediaHTML = '';
-        if( post.media.length > 0 ){
+        if( post.media.length == 1 ){
+            mediaHTML = '<div class="comment-item-images"><a class="comment-item-image" target="_blank" href="' + post.media[0] + '" style="background-image: url('+post.media[0]+');width: 167px;height: 167px"></a></div>';
+        } else if( post.media.length > 1 ){
             post.media.forEach(function(item){
-                mediaHTML += '<a class="comment-item-imagelink" target="_blank" href="' + item + '" ><img class="comment-item-image" src="' + item + '"></a>';
+                mediaHTML += '<a class="comment-item-image" target="_blank" href="' + item + '" style="background-image: url('+item+')"></a>';
             })
             mediaHTML = '<div class="comment-item-images">' + mediaHTML + '</div>';
         }
@@ -737,13 +809,6 @@
         // 发布留言，可编辑删除
         if(!!post.isPost && !_.stat.editing){
             var $this = _.dom.querySelector('.comment-item[data-id="' + post.id + '"]');
-            $this.querySelector('.comment-item-footer').insertAdjacentHTML('beforeend','<span class="comment-item-tips">页面刷新前，十分钟内可编辑或删除</span>');
-            setTimeout(function(){
-                // 五秒后
-                if(!!$this.querySelector('.comment-item-tips')){
-                    $this.querySelector('.comment-item-tips').outerHTML = '';
-                }
-            }, 5000);
 
             var postEdit = setTimeout(function(){
                 // 十分钟后
@@ -789,6 +854,7 @@
     // 读取更多
     iDisqus.prototype.loadMore = function(e){
         var _ = this;
+        _.stat.offsetTop = d.documentElement.scrollTop || d.body.scrollTop;
         if( !_.stat.loading ){
             e.currentTarget.classList.add('loading');
             _.getlist();
@@ -846,13 +912,13 @@
                 }
 
                 // 鼠标悬浮
-                addListener(_.dom.getElementsByClassName('mention-user-item'), 'mouseover', function(){
+                _.addListener('mention-user-item', 'mouseover', function(){
                     _.dom.querySelector('.mention-user-item.active').classList.remove('active');
                     this.classList.add('active');
                 })
 
                 // 鼠标点击
-                addListener(_.dom.getElementsByClassName('mention-user-item'), 'click', function(){
+                _.addListener('mention-user-item', 'click', function(){
                     var username = '@' + this.dataset.username + ' ';
                     textarea.value = textarea.value.slice(0, mentionIndex) + username + textarea.value.slice(selStart);
                     _.dom.querySelector('.mention-user').outerHTML = '';
@@ -984,22 +1050,15 @@
             $this.outerHTML = $this.outerHTML.replace('reply','cancel');
             var commentBox = _.box.replace(/emoji-input/g,'emoji-input-'+item.dataset.id).replace(/upload-input/g,'upload-input-'+item.dataset.id);
             item.querySelector('.comment-item-children').insertAdjacentHTML('beforebegin', commentBox);
-            _.guest.init();
+            _.user.init();
 
-            item.querySelector('.comment-form-textarea').addEventListener('blur', _.handle.focus, false);
-            item.querySelector('.comment-form-textarea').addEventListener('focus', _.handle.focus, false);
-            item.querySelector('.comment-form-textarea').addEventListener('keyup', _.handle.mention, false);
-            item.querySelector('.comment-form-textarea').addEventListener('input', _.handle.input, false);
-            item.querySelector('.comment-form-email').addEventListener('blur', _.handle.verify, false);
-            item.querySelector('.comment-form-submit').addEventListener('click', _.handle.post, false);
-            item.querySelector('.comment-image-input').addEventListener('change', _.handle.upload, false);
-            addListener(item.getElementsByClassName('emojione-item'), 'click', _.handle.field);
+            _.addAllListeners();
             item.querySelector('.comment-form-textarea').focus();
         }
 
         // 监听事件
-        addListener(_.dom.getElementsByClassName('comment-item-reply'), 'click', _.handle.show);
-        addListener(_.dom.getElementsByClassName('comment-item-cancel'), 'click', _.handle.show);
+        _.addListener('comment-item-reply', 'click', _.handle.show);
+        _.addListener('comment-item-cancel', 'click', _.handle.show);
 
     }
 
@@ -1071,6 +1130,7 @@
         var $item;
 
         var xhrUpload = new XMLHttpRequest();
+        xhrUpload.withCredentials = true;
         xhrUpload.onreadystatechange = function(){
             if(xhrUpload.readyState == 4 && xhrUpload.status == 200){
                 var data = JSON.parse(xhrUpload.responseText);
@@ -1150,8 +1210,8 @@
     // 错误提示
     iDisqus.prototype.errorTips = function(Text, Dom){
         var _ = this;
-        if( _.guest.logged_in == 'true' ){
-            _.handle.guestReset();
+        if( _.user.logged_in == 'true' ){
+            _.handle.logout();
         }
         var idisqus = _.dom.querySelector('#idisqus');
         var errorDom = _.dom.querySelector('.comment-form-error');
@@ -1189,43 +1249,46 @@
             var elName = item.querySelector('.comment-form-name');
             var elEmail = item.querySelector('.comment-form-email');
             var elUrl = item.querySelector('.comment-form-url');
-            var guest = {
+            var user = {
                 name: elName.value,
                 email: elEmail.value,
                 url: elUrl.value.replace(/\s/g,''),
-                avatar: item.querySelector('.comment-avatar-image').src
+                avatar: item.querySelector('.comment-avatar-image').src,
+                type: 0
             }
             var alertmsg = item.querySelector('.comment-form-alert');
-            function alertClear(){
+            var alertClear = function() {
                 setTimeout(function(){
                     alertmsg.innerHTML = '';
                 }, 3000);
             }
 
-            if(/^\s*$/i.test(guest.name)){
-                _.errorTips('名字不能为空。', elName);
-                return;
+            if(_.user.type != '1'){
+                if(/^\s*$/i.test(user.name)){
+                    _.errorTips('名字不能为空。', elName);
+                    return;
+                }
+                if(/^\s*$/i.test(user.email)){
+                    _.errorTips('邮箱不能为空。', elEmail);
+                    return;
+                }
+                if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(user.email)){
+                    _.errorTips('请正确填写邮箱。', elEmail);
+                    return;
+                }
+                if(!/^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$|^\s*$/i.test(user.url)){
+                    _.errorTips('请正确填写网址。', elUrl);
+                    return;
+                }
+                _.user.submit(user);
+
+                if( !_.user.name && !_.user.email ){
+                    return;
+                }
             }
-            if(/^\s*$/i.test(guest.email)){
-                _.errorTips('邮箱不能为空。', elEmail);
-                return;
-            }
-            if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(guest.email)){
-                _.errorTips('请正确填写邮箱。', elEmail);
-                return;
-            }
-            if(!/^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$|^\s*$/i.test(guest.url)){
-                _.errorTips('请正确填写网址。', elUrl);
-                return;
-            }
-            _.guest.submit(guest);
 
             if(!_.stat.message && !_.stat.mediaHtml){
                 _.box = _.dom.querySelector('.comment-box').outerHTML.replace(/<label class="comment-actions-label exit"(.|\n)*<\/label>\n/,'').replace('comment-form-wrapper','comment-form-wrapper editing').replace(/加入讨论……/,'');
-            }
-
-            if( !_.guest.name && !_.guest.email ){
-                return;
             }
 
             if( media.length == 0 && /^\s*$/i.test(message)){
@@ -1239,21 +1302,21 @@
             if( !!_.opts.emoji_preview ){
                 preMessage = preMessage.replace(/:([-+\w]+):/g, function (match){
                     var emojiShort = match.replace(/:/g,'');
-                    var emojiImage = !!_.eac[emojiShort] ? '<img class="emojione" width="24" height="24" alt="'+emojiShort+'" title=":'+emojiShort+':" src="'+_.opts.emoji_path+_.eac[emojiShort]+'.png">' : match;
+                    var emojiImage = !!_.eac[emojiShort] ? '<img class="emojione" width="24" height="24" alt="'+emojiShort+'" title=":'+emojiShort+':" src="'+_.opts.emojiPath +_.eac[emojiShort]+'.png">' : match;
                     return emojiImage;
                 });
             } else {
-                _.emoji_list.forEach(function(item){
-                    preMessage = preMessage.replace(':'+item.code+':', '<img class="emojione" width="24" height="24" src="' + _.opts.emoji_path + item.unicode + '.png" />');
+                _.emojiList.forEach(function(item){
+                    preMessage = preMessage.replace(':'+item.code+':', '<img class="emojione" width="24" height="24" src="' + _.opts.emojiPath + item.unicode + '.png" />');
                 });
             }
 
             var post = {
-                'url': !!_.guest.url ? _.guest.url : '',
+                'url': !!_.user.url ? _.user.url : '',
                 'isMod': false,
                 'username': null,
-                'name': _.guest.name,
-                'avatar': _.guest.avatar,
+                'name': _.user.name,
+                'avatar': _.user.avatar,
                 'id': 'preview',
                 'parent': parentId,
                 'createdAt': (new Date()).toJSON(),
@@ -1326,11 +1389,9 @@
                 thread:  _.stat.thread,
                 parent: parentId,
                 message: message,
-                name: _.guest.name,
-                email: _.guest.email,
-                url:  _.guest.url,
-                link: _.opts.url,
-                title: _.opts.title
+                name: _.user.name,
+                email: _.user.email,
+                url:  _.user.url,
             }
             postAjax( _.opts.api + '/postcomment.php', postData, function(resp){
                 var data = JSON.parse(resp);
@@ -1348,9 +1409,16 @@
                     _.reEdit(item);
 
                     if( data.response.indexOf('author') > -1){
-                        _.handle.guestReset();
+                        _.handle.logout();
                     }
+                } else {
+                    alertmsg.innerHTML = '提交失败，请稍后重试，错误代码：' + data.code;
+                    alertClear();
+
+                    _.dom.querySelector('.comment-item[data-id="preview"]').outerHTML = '';
+                    _.reEdit(item);
                 }
+
             }, function(){
                 alertmsg.innerHTML = '提交出错，请稍后重试。';
                 alertClear();
@@ -1378,7 +1446,7 @@
         if(!!_.stat.mediaHtml){
             item.querySelector('.comment-form-wrapper').classList.add('expanded');
             item.querySelector('.comment-image-list').innerHTML = _.stat.mediaHtml;
-            addListener(item.getElementsByClassName('comment-image-item'), 'click', _.handle.remove);
+            _.addListener('comment-image-item', 'click', _.handle.remove);
         }
     }
 
@@ -1388,17 +1456,10 @@
         var commentBox = _.box.replace('comment-box','comment-box comment-box-'+post.id).replace(/emoji-input/g,'emoji-input-'+post.id).replace(/upload-input/g,'upload-input-'+ post.id);
         var $this = _.dom.querySelector('.comment-item[data-id="' + post.id + '"] .comment-item-body');
         $this.outerHTML = commentBox;
-        _.guest.init();
+        _.user.init();
         var item = _.dom.querySelector('.comment-box-' + post.id);
         item.dataset.currentId = post.id;
-        item.querySelector('.comment-form-textarea').addEventListener('blur', _.handle.focus, false);
-        item.querySelector('.comment-form-textarea').addEventListener('focus', _.handle.focus, false);
-        item.querySelector('.comment-form-textarea').addEventListener('input', _.handle.input, false);
-        item.querySelector('.comment-form-textarea').addEventListener('keyup', _.handle.mention, false);
-        item.querySelector('.comment-form-email').addEventListener('blur', _.handle.verify, false);
-        item.querySelector('.comment-form-submit').addEventListener('click', _.handle.post, false);
-        item.querySelector('.comment-image-input').addEventListener('change', _.handle.upload, false);
-        addListener(item.getElementsByClassName('emojione-item'), 'click', _.handle.field);
+        _.addAllListeners();
         item.querySelector('.comment-form-textarea').focus();
 
         // 取消编辑
@@ -1416,7 +1477,7 @@
         if(!!_.stat.mediaHtml){
             item.querySelector('.comment-form-wrapper').classList.add('expanded');
             item.querySelector('.comment-image-list').innerHTML = _.stat.mediaHtml;
-            addListener(item.getElementsByClassName('comment-image-item'), 'click', _.handle.remove);
+            _.addListener('comment-image-item', 'click', _.handle.remove);
         }
 
     }
@@ -1424,7 +1485,7 @@
     // 创建 Thread 表单
     iDisqus.prototype.create = function(){
         var _ = this;
-        if(!!_.opts.auto){
+        if(_.opts.autoCreate){
             _.dom.querySelector('.loading-container').dataset.tip = '正在创建 Thread……';
             var postData = {
                 url: _.opts.link,
@@ -1495,21 +1556,21 @@
     // 销毁评论框
     iDisqus.prototype.destroy = function(){
         var _ = this;
-        _.dom.querySelector('.exit').removeEventListener('click', _.handle.guestReset, false);
-        removeListener(_.dom.getElementsByClassName('comment-form-textarea'), 'blur', _.handle.focus);
-        removeListener(_.dom.getElementsByClassName('comment-form-textarea'), 'focus', _.handle.focus);
-        removeListener(_.dom.getElementsByClassName('comment-form-textarea'), 'keyup', _.handle.mention);
-        removeListener(_.dom.getElementsByClassName('comment-form-email'), 'blur', _.handle.verify);
-        removeListener(_.dom.getElementsByClassName('comment-form-submit'), 'click', _.handle.post);
-        removeListener(_.dom.getElementsByClassName('comment-image-input'), 'change', _.handle.upload);
-        removeListener(_.dom.getElementsByClassName('comment-item-reply'), 'click', _.handle.show);
-        removeListener(_.dom.getElementsByClassName('comment-loadmore'), 'click', _.handle.loadMore);
-        removeListener(_.dom.getElementsByClassName('emojione-item'), 'click', _.handle.field);
+        _.removeListener('exit', 'click', _.handle.logout);
+        _.removeListener('comment-form-textarea', 'blur', _.handle.focus);
+        _.removeListener('comment-form-textarea', 'focus', _.handle.focus);
+        _.removeListener('comment-form-textarea', 'keyup', _.handle.mention);
+        _.removeListener('comment-form-email', 'blur', _.handle.verify);
+        _.removeListener('comment-form-submit', 'click', _.handle.post);
+        _.removeListener('comment-image-input', 'change', _.handle.upload);
+        _.removeListener('comment-item-reply', 'click', _.handle.show);
+        _.removeListener('comment-loadmore', 'click', _.handle.loadMore);
+        _.removeListener('emojione-item', 'click', _.handle.field);
         _.dom.innerHTML = '';
         delete _.box;
         delete _.dom;
-        delete _.emoji_list;
-        delete _.guest;
+        delete _.emojiList;
+        delete _.user;
         delete _.handle;
         delete _.opts;
         delete _.stat;
