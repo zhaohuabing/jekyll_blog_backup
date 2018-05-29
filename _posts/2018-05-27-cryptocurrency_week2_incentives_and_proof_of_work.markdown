@@ -38,7 +38,7 @@ The total number of BTC is 21 million, at the current rate, all the BTC will be 
 
 I would have the chance be a miner if I started this lesson in 2009, what a shame! :-(
 
-![Bitcoin and Block Reward](\img\in-post\018-05-27-cryptocurrency_week2_incentives_and_proof_of_work\block_reward.png)
+![Bitcoin and Block Reward](\img\in-post\2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work\block_reward.png)
 
 [Genesis Block](https://en.bitcoin.it/wiki/Genesis_block)    
 [Bitcoin Block Reward Halving Countdown](https://www.bitcoinblockhalf.com/)
@@ -57,7 +57,7 @@ To select node who gets to propose the block based on their computing power(the 
 
 A hash puzzle needs computing power to solve: find a nonce to get a hash output falling into a small target space.
 
-![Hash Puzzle](\img\in-post\018-05-27-cryptocurrency_week2_incentives_and_proof_of_work\hash-puzzle.png)
+![Hash Puzzle](\img\in-post\2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work\hash-puzzle.png)
 
 ### PoW properties
 * Difficult to Compute    
