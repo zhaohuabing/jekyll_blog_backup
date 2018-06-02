@@ -7,7 +7,7 @@ excerpt: "Everything about setting up my own ubuntu desktop, it's just a note in
 date:       2018-05-24 09:00:00
 author:     "赵化冰"
 header-img: "img/in-post/2018-05-23-service_2_service_auth/background.jpg"
-published: false 
+published: true 
 tags:
     - ubuntu 
 category: [ tips ]    
@@ -82,4 +82,10 @@ Http proxy now is available at port 8123
 sudo add-apt-repository ppa:whizzzkid/bingwallpaper
 sudo apt-get update
 sudo apt-get install bingwallpaper
+```
+
+# Use vim mode in bash
+
+```
+echo 'set -o vi'>> ~/.bashrc
 ```
