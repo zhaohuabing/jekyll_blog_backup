@@ -11,6 +11,7 @@ tags:
     - Microservice
     - Service Mesh
     - Istio
+category: [ tech ]    
 ---
 
 ## 目录
